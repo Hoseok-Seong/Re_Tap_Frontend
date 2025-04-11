@@ -11,6 +11,7 @@ class FutureLetterApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
       title: 'FutureLetter',
       theme: ThemeData(
         primarySwatch: Colors.blue,
