@@ -26,12 +26,16 @@ class LoginScreen extends StatelessWidget {
       throw Exception('Google AccessToken 없음');
     }
 
-    await loginService.oauthLogin(
+    final response = await loginService.oauthLogin(
       provider: 'google',
       accessToken: accessToken,
     );
 
-    context.go('/home'); // 임시 이동
+    if (response.isNewUser) {
+      context.go('/setup');
+    } else {
+      context.go('/home');
+    }
   }
 
   Future<void> _loginWithKakao(BuildContext context) async {
@@ -46,12 +50,16 @@ class LoginScreen extends StatelessWidget {
 
     final accessToken = token.accessToken;
 
-    await loginService.oauthLogin(
+    final response = await loginService.oauthLogin(
       provider: 'kakao',
       accessToken: accessToken,
     );
 
-    context.go('/home');
+    if (response.isNewUser) {
+      context.go('/setup');
+    } else {
+      context.go('/home');
+    }
   }
 
   Future<void> _loginWithNaver(BuildContext context) async {
@@ -63,12 +71,16 @@ class LoginScreen extends StatelessWidget {
 
     final naverAccessToken = result.accessToken;
 
-    await loginService.oauthLogin(
+    final response = await loginService.oauthLogin(
       provider: 'naver',
       accessToken: naverAccessToken.accessToken,
     );
 
-    context.go('/home');
+    if (response.isNewUser) {
+      context.go('/setup');
+    } else {
+      context.go('/home');
+    }
   }
 
   @override

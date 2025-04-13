@@ -1,10 +1,12 @@
 import 'package:future_letter/api/auth_api.dart';
 import 'package:future_letter/dto/login_request.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../dto/login_response.dart';
 
 class LoginService {
   final AuthApi authApi = AuthApi();
 
-  Future<void> oauthLogin({
+  Future<LoginResponse> oauthLogin({
     required String provider,
     required String accessToken,
   }) async {
@@ -15,13 +17,10 @@ class LoginService {
 
     final response = await authApi.oauthLogin(request);
 
-    final token = response.data['accessToken'];
-    final isNewUser = response.data['isNewUser'];
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('access_token', response.accessToken);
+    await prefs.setString('refresh_token', response.refreshToken);
 
-    print('JWT Token: $token');
-    print('isNewUser: $isNewUser');
-
-    // TODO: 토큰 저장
-    // await prefs.setString('access_token', token);
+    return response;
   }
 }
