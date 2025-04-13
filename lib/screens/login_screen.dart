@@ -44,13 +44,11 @@ class LoginScreen extends StatelessWidget {
       token = await UserApi.instance.loginWithKakaoAccount();
     }
 
-    User user = await UserApi.instance.me();
     final accessToken = token.accessToken;
 
     await loginService.oauthLogin(
       provider: 'kakao',
       accessToken: accessToken,
-      profileImageUrl: user.properties?['profile_image'],
     );
 
     context.go('/home');
@@ -63,7 +61,6 @@ class LoginScreen extends StatelessWidget {
       throw Exception('네이버 로그인 실패');
     }
 
-    final account = result.account;
     final naverAccessToken = result.accessToken;
 
     await loginService.oauthLogin(

@@ -7,12 +7,10 @@ class LoginService {
   Future<void> oauthLogin({
     required String provider,
     required String accessToken,
-    String? profileImageUrl,
   }) async {
     final request = LoginRequest(
       provider: provider,
       accessToken: accessToken,
-      profileImageUrl: profileImageUrl,
     );
 
     final response = await authApi.oauthLogin(request);
