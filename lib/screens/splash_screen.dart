@@ -34,7 +34,7 @@ class _SplashScreenState extends State<SplashScreen> {
     return const Scaffold(
       body: Center(
         child: Text(
-          '📨 FutureLetter',
+          '📨 Read Later',
           style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
         ),
       ),

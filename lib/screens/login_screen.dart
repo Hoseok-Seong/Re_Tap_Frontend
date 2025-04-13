@@ -42,6 +42,8 @@ class LoginScreen extends StatelessWidget {
       token = await UserApi.instance.loginWithKakaoAccount();
     }
 
+    User user = await UserApi.instance.me();
+
     final accessToken = token.accessToken;
 
     print('Kakao AccessToken: $accessToken');
@@ -56,10 +58,12 @@ class LoginScreen extends StatelessWidget {
     if (result.status != NaverLoginStatus.loggedIn) {
       throw Exception('네이버 로그인 실패');
     }
+    final account = result.account;
 
     final accessToken = result.accessToken;
 
     print('Naver AccessToken: $accessToken');
+    print('Naver account: $account');
 
     // TODO 서버 API 호출
     context.go('/home');
@@ -76,7 +80,7 @@ class LoginScreen extends StatelessWidget {
           children: [
             const Spacer(),
             const Text(
-              'FutureLetter',
+              '📨 Read Later',
               style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
