@@ -32,7 +32,7 @@ class LoginScreen extends StatelessWidget {
     );
 
     if (response.isNewUser) {
-      context.go('/setup');
+      context.go('/profile-setup');
     } else {
       context.go('/home');
     }
@@ -56,7 +56,7 @@ class LoginScreen extends StatelessWidget {
     );
 
     if (response.isNewUser) {
-      context.go('/setup');
+      context.go('/profile-setup');
     } else {
       context.go('/home');
     }
@@ -77,7 +77,7 @@ class LoginScreen extends StatelessWidget {
     );
 
     if (response.isNewUser) {
-      context.go('/setup');
+      context.go('/profile-setup');
     } else {
       context.go('/home');
     }

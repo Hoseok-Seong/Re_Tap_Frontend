@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:future_letter/screens/my_page_screen.dart';
+import 'package:future_letter/screens/notification_screen.dart';
 import 'package:go_router/go_router.dart';
 
 import '../screens/splash_screen.dart';
@@ -24,8 +25,8 @@ class AppRouter {
         builder: (context, state) => LoginScreen(),
       ),
       GoRoute(
-        path: '/setup',
-        name: 'setup',
+        path: '/profile-setup',
+        name: 'profile-setup',
         builder: (context, state) => const ProfileSetupScreen(),
       ),
       GoRoute(
@@ -39,8 +40,8 @@ class AppRouter {
         builder: (context, state) => const LetterWriteScreen(),
       ),
       GoRoute(
-        path: '/list',
-        name: 'list',
+        path: '/letters',
+        name: 'letters',
         builder: (context, state) => const LetterListScreen(),
       ),
       GoRoute(
@@ -50,6 +51,16 @@ class AppRouter {
           final id = state.pathParameters['id'];
           return LetterDetailScreen(letterId: id!);
         },
+      ),
+      GoRoute(
+        path: '/mypage',
+        name: 'mypage',
+        builder: (context, state) => const MyPageScreen(),
+      ),
+      GoRoute(
+        path: '/notification',
+        name: 'notification',
+        builder: (context, state) => const NotificationScreen(),
       ),
     ],
   );
