@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
+import '../service/login_service.dart';
 
 class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+  LoginScreen({super.key});
+
+  final loginService = LoginService();
 
   Future<void> _loginWithGoogle(BuildContext context) async {
     final GoogleSignIn googleSignIn = GoogleSignIn();
@@ -24,10 +26,10 @@ class LoginScreen extends StatelessWidget {
       throw Exception('Google AccessToken 없음');
     }
 
-    print('Google AccessToken: $accessToken');
-
-    // TODO: 서버 API 호출
-    // await dio.post('/api/auth/oauth-login', data: { provider, accessToken })
+    await loginService.oauthLogin(
+      provider: 'google',
+      accessToken: accessToken,
+    );
 
     context.go('/home'); // 임시 이동
   }
@@ -43,12 +45,14 @@ class LoginScreen extends StatelessWidget {
     }
 
     User user = await UserApi.instance.me();
-
     final accessToken = token.accessToken;
 
-    print('Kakao AccessToken: $accessToken');
+    await loginService.oauthLogin(
+      provider: 'kakao',
+      accessToken: accessToken,
+      profileImageUrl: user.properties?['profile_image'],
+    );
 
-    // TODO 서버 API 호출
     context.go('/home');
   }
 
@@ -58,14 +62,15 @@ class LoginScreen extends StatelessWidget {
     if (result.status != NaverLoginStatus.loggedIn) {
       throw Exception('네이버 로그인 실패');
     }
+
     final account = result.account;
+    final naverAccessToken = result.accessToken;
 
-    final accessToken = result.accessToken;
+    await loginService.oauthLogin(
+      provider: 'naver',
+      accessToken: naverAccessToken.accessToken,
+    );
 
-    print('Naver AccessToken: $accessToken');
-    print('Naver account: $account');
-
-    // TODO 서버 API 호출
     context.go('/home');
   }
 

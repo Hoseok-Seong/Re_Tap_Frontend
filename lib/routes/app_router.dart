@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 
 import '../screens/splash_screen.dart';
 import '../screens/login_screen.dart';
-import '../screens/verify_code_screen.dart';
 import '../screens/profile_setup_screen.dart';
 import '../screens/home_screen.dart';
 import '../screens/letter_write_screen.dart';
@@ -22,12 +21,7 @@ class AppRouter {
       GoRoute(
         path: '/login',
         name: 'login',
-        builder: (context, state) => const LoginScreen(),
-      ),
-      GoRoute(
-        path: '/verify',
-        name: 'verify',
-        builder: (context, state) => const VerifyCodeScreen(),
+        builder: (context, state) => LoginScreen(),
       ),
       GoRoute(
         path: '/setup',

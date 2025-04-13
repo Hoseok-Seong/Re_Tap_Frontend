@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../models/letter.dart';
+import '../dto/letter.dart';
 
 class LetterDetailScreen extends StatelessWidget {
   final String letterId;
