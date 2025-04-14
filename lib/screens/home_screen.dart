@@ -32,24 +32,37 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildBanner() {
+    final hashtags = [
+      '#하루를 돌아보며',
+      '#지금의 고민',
+      '#이루고 싶은 목표',
+      '#응원 한마디',
+      '#나만의 다짐',
+      '#사랑하는 사람에게'
+    ];
+
     return _card(
+      padding: const EdgeInsets.all(20),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Icon(Icons.mail_outline, size: 40, color: AppColors.primary),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text(
-                  '고민, 걱정, 목표, 다짐\n어느 것이든 좋아요.',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              children: [
+                const Text(
+                  '시간을 담아, 나에게 보내는 편지',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
-                SizedBox(height: 4),
-                Text(
-                  '미래의 나에게 편지를 남겨보세요.',
+                const SizedBox(height: 8),
+                const Text(
+                  '오늘의 생각이, 언젠가의 나를 위로할지도 몰라요.',
                   style: TextStyle(color: Colors.grey),
                 ),
+                const SizedBox(height: 12),
+                _HashtagSwitcher(hashtags: hashtags),
               ],
             ),
           ),
@@ -152,10 +165,10 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _card({required Widget child}) {
+  Widget _card({required Widget child, EdgeInsetsGeometry padding = const EdgeInsets.all(20),}) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: padding,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -168,6 +181,58 @@ class HomeScreen extends StatelessWidget {
         ],
       ),
       child: child,
+    );
+  }
+}
+
+class _HashtagSwitcher extends StatefulWidget {
+  final List<String> hashtags;
+  const _HashtagSwitcher({required this.hashtags});
+
+  @override
+  State<_HashtagSwitcher> createState() => _HashtagSwitcherState();
+}
+
+class _HashtagSwitcherState extends State<_HashtagSwitcher> {
+  int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _startCycling();
+  }
+
+  void _startCycling() {
+    Future.doWhile(() async {
+      await Future.delayed(const Duration(seconds: 4));
+      if (!mounted) return false;
+      setState(() {
+        _currentIndex = (_currentIndex + 1) % widget.hashtags.length;
+      });
+      return true;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 400),
+      transitionBuilder: (child, animation) => FadeTransition(
+        opacity: animation,
+        child: child,
+      ),
+      child: Align(  // <- 왼쪽 정렬 고정
+        alignment: Alignment.centerLeft,
+        child: Text(
+          widget.hashtags[_currentIndex],
+          key: ValueKey(_currentIndex),
+          style: const TextStyle(
+            color: AppColors.primary,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ),
     );
   }
 }
