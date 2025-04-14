@@ -26,16 +26,18 @@ class LoginScreen extends StatelessWidget {
       throw Exception('Google AccessToken 없음');
     }
 
-    final response = await loginService.oauthLogin(
-      provider: 'google',
-      accessToken: accessToken,
-    );
+    // final response = await loginService.oauthLogin(
+    //   provider: 'google',
+    //   accessToken: accessToken,
+    // );
+    //
+    // if (response.isNewUser) {
+    //   context.go('/profile-setup');
+    // } else {
+    //   context.go('/home');
+    // }
 
-    if (response.isNewUser) {
-      context.go('/profile-setup');
-    } else {
-      context.go('/home');
-    }
+    context.go('/profile-setup');
   }
 
   Future<void> _loginWithKakao(BuildContext context) async {

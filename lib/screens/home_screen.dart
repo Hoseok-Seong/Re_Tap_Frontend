@@ -16,9 +16,11 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildTodaySentence(),
+            _buildBanner(),
             const SizedBox(height: 16),
-            _buildTodayQuestion(),
+            _buildTodaySentence(),
+            // const SizedBox(height: 16),
+            // _buildTodayQuestion(),
             const SizedBox(height: 16),
             _buildRecentLetter(context),
             const SizedBox(height: 16),
@@ -29,18 +31,45 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildBanner() {
+    return _card(
+      child: Row(
+        children: [
+          const Icon(Icons.mail_outline, size: 40, color: AppColors.primary),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text(
+                  '고민, 걱정, 목표, 다짐\n어느 것이든 좋아요.',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  '미래의 나에게 편지를 남겨보세요.',
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildTodaySentence() {
     return _card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('오늘의 한 문장', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 8),
-          const Text(
+        children: const [
+          Text('오늘의 한 문장', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          SizedBox(height: 8),
+          Text(
             '과거의 나도, 미래의 나도, 결국 지금의 내가 만든다.',
-            style: TextStyle(fontSize: 20),
+            style: TextStyle(fontSize: 16),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text('- FutureLetter', style: TextStyle(color: Colors.grey)),
         ],
       ),
@@ -54,47 +83,54 @@ class HomeScreen extends StatelessWidget {
         children: const [
           Text('오늘의 질문', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           SizedBox(height: 8),
-          Text('오늘 하루 가장 기억에 남는 순간은 무엇인가요?', style: TextStyle(fontSize: 20)),
+          Text('오늘 하루 가장 기억에 남는 순간은 무엇인가요?', style: TextStyle(fontSize: 16)),
         ],
       ),
     );
   }
 
   Widget _buildRecentLetter(BuildContext context) {
-    bool hasLetter = false; // TODO: 서버 데이터 바인딩 시 처리
+    bool hasLetter = false; // TODO: 서버 연결 시 처리
 
     return _card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
           const Text('최근 편지', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            GestureDetector(
+              onTap: () => context.go('/write'),
+              child: const Text('전체보기', style: TextStyle(fontSize: 14)),
+            ),
+          ]),
           const SizedBox(height: 8),
-          if (!hasLetter)
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+          hasLetter
+              ? const Text('최근 편지가 있습니다!') // TODO: 편지 preview
+              : Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('아직 부친 편지가 없어요 🥲'),
+              GestureDetector(
+                onTap: () => context.go('/write'),
+                child: const Text(
+                  '편지 쓰러가기 >',
+                  style: TextStyle(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                onPressed: () {
-                  context.go('/write');
-                },
-                child: const Text('편지 쓰러 가기'),
               ),
-            )
-          else
-            const Text('최근 편지가 있습니다!'), // TODO: 편지 preview 넣기
+            ],
+          ),
         ],
       ),
     );
   }
 
   Widget _buildArrivalLetter() {
-    int arrivalCount = 0; // TODO: 서버 데이터 바인딩 시 처리
+    int arrivalCount = 0; // TODO: 서버 연결 시 처리
 
     return _card(
       child: Column(
@@ -103,7 +139,7 @@ class HomeScreen extends StatelessWidget {
           const Text('도착 예정 편지', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           arrivalCount == 0
-              ? const Text('아직 도착할 편지가 없어요.')
+              ? const Text('아직 도착한 편지가 없어요 📭')
               : Row(
             children: [
               const Icon(Icons.mail, color: AppColors.primary),
@@ -121,8 +157,15 @@ class HomeScreen extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFFF9F9F9),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          )
+        ],
       ),
       child: child,
     );

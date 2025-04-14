@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import '../common/constants.dart';
 
@@ -16,6 +17,10 @@ class MainLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: Colors.white,
+          statusBarIconBrightness: Brightness.dark,
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
@@ -26,7 +31,7 @@ class MainLayout extends StatelessWidget {
             const Text(
               'Read Later',
               style: TextStyle(
-                color: Colors.black,
+                color: AppColors.primary,
                 fontWeight: FontWeight.bold,
               ),
             ),
