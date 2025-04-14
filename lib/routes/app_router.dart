@@ -2,6 +2,7 @@ import 'package:future_letter/screens/my_page_screen.dart';
 import 'package:future_letter/screens/notification_screen.dart';
 import 'package:go_router/go_router.dart';
 
+import '../screens/settings_screen.dart';
 import '../screens/splash_screen.dart';
 import '../screens/login_screen.dart';
 import '../screens/profile_setup_screen.dart';
@@ -61,6 +62,11 @@ class AppRouter {
         path: '/notification',
         name: 'notification',
         builder: (context, state) => const NotificationScreen(),
+      ),
+      GoRoute(
+        path: '/settings',
+        name: 'settings',
+        builder: (context, state) => const SettingsScreen(),
       ),
     ],
   );
