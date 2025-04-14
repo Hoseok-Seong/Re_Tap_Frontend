@@ -31,7 +31,7 @@ class MainLayout extends StatelessWidget {
             const Text(
               'Read Later',
               style: TextStyle(
-                color: AppColors.primary,
+                color: Colors.grey,
                 fontWeight: FontWeight.bold,
               ),
             ),

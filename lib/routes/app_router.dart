@@ -44,14 +44,14 @@ class AppRouter {
         name: 'letters',
         builder: (context, state) => const LetterListScreen(),
       ),
-      // GoRoute(
-      //   path: '/detail/:id',
-      //   name: 'detail',
-      //   builder: (context, state) {
-      //     final id = state.pathParameters['id'];
-      //     return LetterDetailScreen(letterId: id!);
-      //   },
-      // ),
+      GoRoute(
+        path: '/detail/:id',
+        name: 'detail',
+        builder: (context, state) {
+          final id = state.pathParameters['id'];
+          return LetterDetailScreen(letterId: id!);
+        },
+      ),
       GoRoute(
         path: '/mypage',
         name: 'mypage',
