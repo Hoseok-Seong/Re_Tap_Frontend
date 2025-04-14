@@ -204,7 +204,7 @@ class _HashtagSwitcherState extends State<_HashtagSwitcher> {
 
   void _startCycling() {
     Future.doWhile(() async {
-      await Future.delayed(const Duration(seconds: 4));
+      await Future.delayed(const Duration(seconds: 3));
       if (!mounted) return false;
       setState(() {
         _currentIndex = (_currentIndex + 1) % widget.hashtags.length;
