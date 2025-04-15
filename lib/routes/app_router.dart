@@ -5,6 +5,7 @@ import 'package:future_letter/screens/welcome_screen.dart';
 import 'package:go_router/go_router.dart';
 
 import '../screens/main_layout.dart';
+import '../screens/on_boarding_screen.dart';
 import '../screens/settings_screen.dart';
 import '../screens/splash_screen.dart';
 import '../screens/login_screen.dart';
@@ -82,6 +83,11 @@ class AppRouter {
         path: '/welcome',
         name: 'welcome',
         builder: (context, state) => const WelcomeScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding',
+        name: 'onboarding',
+        builder: (context, state) => const OnboardingScreen(),
       ),
     ],
   );
