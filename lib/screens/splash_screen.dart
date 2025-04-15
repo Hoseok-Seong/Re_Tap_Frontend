@@ -25,7 +25,8 @@ class _SplashScreenState extends State<SplashScreen> {
     if (token != null && token.isNotEmpty) {
       context.go('/home');
     } else {
-      context.go('/onboarding');
+      // context.go('/onboarding');
+      context.go('/home');
     }
   }
 
