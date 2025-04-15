@@ -1,123 +1,161 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../common/constants.dart';
 
-class ProfileSetupScreen extends StatefulWidget {
-  const ProfileSetupScreen({super.key});
+class ProfileAgreementScreen extends StatefulWidget {
+  const ProfileAgreementScreen({super.key});
 
   @override
-  State<ProfileSetupScreen> createState() => _ProfileSetupScreenState();
+  State<ProfileAgreementScreen> createState() => _ProfileAgreementScreenState();
 }
 
-class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
-  final TextEditingController _nicknameController = TextEditingController();
-  File? _selectedImage;
+class _ProfileAgreementScreenState extends State<ProfileAgreementScreen> {
+  bool agreeAll = false;
+  bool agreeTerms = false;
+  bool agreePrivacy = false;
 
-  Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+  bool isExpandedTerms = false;
+  bool isExpandedPrivacy = false;
 
-    if (pickedFile != null) {
-      setState(() {
-        _selectedImage = File(pickedFile.path);
-      });
-    }
+  void _toggleAll(bool? value) {
+    setState(() {
+      agreeAll = value ?? false;
+      agreeTerms = value ?? false;
+      agreePrivacy = value ?? false;
+    });
   }
 
-  Future<void> _completeProfile() async {
-    final nickname = _nicknameController.text.trim();
-    if (nickname.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('닉네임을 입력해주세요')),
-      );
-      return;
-    }
-
+  void _saveAgreement() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('nickname', nickname);
-    if (_selectedImage != null) {
-      await prefs.setString('profile_image_path', _selectedImage!.path);
-    }
+    await prefs.setBool('isFirstLogin', false);
+    context.go('/profile-setup');  // 프로필 닉네임 설정 페이지로 이동
+  }
 
-    context.go('/home');
+  Widget _buildAgreementTile({
+    required String title,
+    required bool value,
+    required Function(bool?) onChanged,
+    required String content,
+    required bool isExpanded,
+    required VoidCallback onExpand,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: Checkbox(value: value, onChanged: onChanged),
+          title: GestureDetector(
+            onTap: onExpand,
+            child: Row(
+              children: [
+                Text(title, style: const TextStyle(fontSize: 14)),
+                const SizedBox(width: 4),
+                Icon(
+                  isExpanded
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
+                  size: 18,
+                )
+              ],
+            ),
+          ),
+        ),
+        AnimatedCrossFade(
+          duration: const Duration(milliseconds: 300),
+          firstChild: const SizedBox.shrink(),
+          secondChild: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+            child: Text(content, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+          ),
+          crossFadeState: isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+        ),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
+      appBar: AppBar(automaticallyImplyLeading: false),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Spacer(),
-            Text(
-              '회원가입을 축하해요!',
-              style: TextStyle(
-                color: AppColors.text,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text('프로필을 설정해 주세요.'),
-            const SizedBox(height: 24),
-            GestureDetector(
-              onTap: _pickImage,
-              child: CircleAvatar(
-                radius: 50,
-                backgroundImage: _selectedImage != null
-                    ? FileImage(_selectedImage!)
-                    : null,
-                backgroundColor: Colors.grey.shade300,
-                child: _selectedImage == null
-                    ? const Icon(Icons.camera_alt, size: 32)
-                    : null,
-              ),
-            ),
-            if (_selectedImage != null)
-              Positioned(
-                right: -4,
-                top: -4,
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _selectedImage = null;
-                    });
-                  },
-                  child: const CircleAvatar(
-                    radius: 12,
-                    backgroundColor: Colors.black54,
-                    child: Icon(Icons.close, size: 16, color: Colors.white),
-                  ),
-                ),
-              ),
-            const SizedBox(height: 24),
-            TextField(
-              controller: _nicknameController,
-              decoration: const InputDecoration(
-                labelText: '닉네임',
-                border: OutlineInputBorder(),
-              ),
+            const SizedBox(height: 16),
+            const Text(
+              '미래의 나에게 보내는\n첫 편지를 준비해볼까요?',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 32),
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Checkbox(value: agreeAll, onChanged: _toggleAll),
+                    title: const Text('모두 동의하기', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                  const Divider(),
+                  _buildAgreementTile(
+                    title: '서비스 이용약관 (필수)',
+                    value: agreeTerms,
+                    onChanged: (v) {
+                      setState(() {
+                        agreeTerms = v ?? false;
+                        agreeAll = agreeTerms && agreePrivacy;
+                      });
+                    },
+                    content: '서비스 이용약관 내용입니다. 이 곳에 상세 약관이 들어갑니다.',
+                    isExpanded: isExpandedTerms,
+                    onExpand: () => setState(() => isExpandedTerms = !isExpandedTerms),
+                  ),
+                  _buildAgreementTile(
+                    title: '개인정보 처리방침 (필수)',
+                    value: agreePrivacy,
+                    onChanged: (v) {
+                      setState(() {
+                        agreePrivacy = v ?? false;
+                        agreeAll = agreeTerms && agreePrivacy;
+                      });
+                    },
+                    content: '개인정보 처리방침 내용입니다. 이 곳에 상세 약관이 들어갑니다.',
+                    isExpanded: isExpandedPrivacy,
+                    onExpand: () => setState(() => isExpandedPrivacy = !isExpandedPrivacy),
+                  ),
+                ],
+              ),
+            ),
+            const Spacer(),
             SizedBox(
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
+                  backgroundColor: agreeTerms && agreePrivacy
+                      ? AppColors.primary
+                      : Colors.grey.shade300,
                 ),
-                onPressed: _completeProfile,
-                child: const Text('프로필 설정하기'),
+                onPressed: agreeTerms && agreePrivacy ? _saveAgreement : null,
+                child: const Text('시작하기'),
               ),
             ),
-            const Spacer(),
           ],
         ),
       ),

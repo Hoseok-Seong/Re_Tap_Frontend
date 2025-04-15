@@ -1,5 +1,7 @@
+import 'package:future_letter/screens/agreement_screen.dart';
 import 'package:future_letter/screens/my_page_screen.dart';
 import 'package:future_letter/screens/notification_screen.dart';
+import 'package:future_letter/screens/welcome_screen.dart';
 import 'package:go_router/go_router.dart';
 
 import '../screens/settings_screen.dart';
@@ -28,7 +30,7 @@ class AppRouter {
       GoRoute(
         path: '/profile-setup',
         name: 'profile-setup',
-        builder: (context, state) => const ProfileSetupScreen(),
+        builder: (context, state) => const AgreementScreen(),
       ),
       GoRoute(
         path: '/home',
@@ -67,6 +69,11 @@ class AppRouter {
         path: '/settings',
         name: 'settings',
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/welcome',
+        name: 'welcome',
+        builder: (context, state) => const WelcomeScreen(),
       ),
     ],
   );
