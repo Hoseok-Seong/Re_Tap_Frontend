@@ -4,10 +4,10 @@ import 'package:future_letter/screens/notification_screen.dart';
 import 'package:future_letter/screens/welcome_screen.dart';
 import 'package:go_router/go_router.dart';
 
+import '../screens/main_layout.dart';
 import '../screens/settings_screen.dart';
 import '../screens/splash_screen.dart';
 import '../screens/login_screen.dart';
-import '../screens/profile_setup_screen.dart';
 import '../screens/home_screen.dart';
 import '../screens/letter_write_screen.dart';
 import '../screens/letter_list_screen.dart';
@@ -28,24 +28,37 @@ class AppRouter {
         builder: (context, state) => LoginScreen(),
       ),
       GoRoute(
-        path: '/profile-setup',
-        name: 'profile-setup',
+        path: '/agreement',
+        name: 'agreement',
         builder: (context, state) => const AgreementScreen(),
       ),
       GoRoute(
         path: '/home',
         name: 'home',
-        builder: (context, state) => const HomeScreen(),
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: MainLayout(currentIndex: 0),
+        ),
       ),
       GoRoute(
         path: '/write',
         name: 'write',
-        builder: (context, state) => const LetterWriteScreen(),
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: MainLayout(currentIndex: 1),
+        ),
       ),
       GoRoute(
         path: '/letters',
         name: 'letters',
-        builder: (context, state) => const LetterListScreen(),
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: MainLayout(currentIndex: 2),
+        ),
+      ),
+      GoRoute(
+        path: '/mypage',
+        name: 'mypage',
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: MainLayout(currentIndex: 3),
+        ),
       ),
       GoRoute(
         path: '/detail/:id',
@@ -54,11 +67,6 @@ class AppRouter {
           final id = state.pathParameters['id'];
           return LetterDetailScreen(letterId: id!);
         },
-      ),
-      GoRoute(
-        path: '/mypage',
-        name: 'mypage',
-        builder: (context, state) => const MyPageScreen(),
       ),
       GoRoute(
         path: '/notification',

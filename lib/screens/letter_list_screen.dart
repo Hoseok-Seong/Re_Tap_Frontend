@@ -19,9 +19,7 @@ class LetterListScreen extends StatelessWidget {
       Letter(id: '3', title: '이번 여름의 목표', content: '', openDate: now, isOpened: true, status: 'saved'),  // 임시저장
     ];
 
-    return MainLayout(
-      currentIndex: 2,
-      child: Padding(
+    return Padding(
         padding: const EdgeInsets.all(16.0),
         child: letters.isEmpty
             ? Center(
@@ -116,7 +114,6 @@ class LetterListScreen extends StatelessWidget {
                   );
                 },
         ),
-      ),
-    );
+      );
   }
 }

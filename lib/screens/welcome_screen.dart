@@ -13,8 +13,11 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
+  late Animation<Offset> _slideAnimation;
   late Animation<double> _fadeAnimation;
+  final TextEditingController _nicknameController = TextEditingController();
+
+  bool get _isNicknameFilled => _nicknameController.text.trim().isNotEmpty;
 
   @override
   void initState() {
@@ -22,21 +25,25 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(milliseconds: 1200),
     )..forward();
 
-    _scaleAnimation = Tween(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.2),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
     );
 
-    _fadeAnimation = Tween(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
+    _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _nicknameController.dispose();
     super.dispose();
   }
 
@@ -44,53 +51,76 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ScaleTransition(
-              scale: _scaleAnimation,
-              child: FadeTransition(
+      resizeToAvoidBottomInset: true, // 키보드 올라와도 UI 줄어들도록
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(24, 24, 24, MediaQuery.of(context).viewInsets.bottom + 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: 80),
+              FadeTransition(
                 opacity: _fadeAnimation,
-                child: Column(
-                  children: [
-                    const Icon(Icons.mail_outline,
-                        size: 80, color: AppColors.primary),
-                    const SizedBox(height: 16),
-                    Text(
-                      '환영합니다!',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.text,
+                child: SlideTransition(
+                  position: _slideAnimation,
+                  child: Column(
+                    children: [
+                      const Icon(Icons.mail_outline,
+                          size: 80, color: AppColors.primary),
+                      const SizedBox(height: 16),
+                      Text(
+                        '환영합니다!',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.text,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      '미래의 나에게, 첫 편지를 남겨보세요.',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
+                      const SizedBox(height: 8),
+                      const Text(
+                        '미래의 나에게, 첫 편지를 남겨보세요.',
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 32),
+                      TextField(
+                        controller: _nicknameController,
+                        onChanged: (_) => setState(() {}),
+                        decoration: InputDecoration(
+                          labelText: '닉네임을 입력하세요',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _isNicknameFilled
+                                ? AppColors.primary
+                                : Colors.grey.shade300,
+                          ),
+                          onPressed: _isNicknameFilled
+                              ? () {
+                            final nickname = _nicknameController.text.trim();
+                            // TODO: 닉네임 저장 로직
+                            context.go('/home');
+                          }
+                              : null,
+                          child: const Text('시작하기'),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 80),
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                ),
-                onPressed: () {
-                  context.go('/home');
-                },
-                child: const Text('시작하기'),
-              ),
-            )
-          ],
+            ],
+          ),
         ),
       ),
     );

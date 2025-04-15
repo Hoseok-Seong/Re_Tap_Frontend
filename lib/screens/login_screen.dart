@@ -32,12 +32,12 @@ class LoginScreen extends StatelessWidget {
     // );
     //
     // if (response.isNewUser) {
-    //   context.go('/profile-setup');
+    //   context.go('/agreement');
     // } else {
     //   context.go('/home');
     // }
 
-    context.go('/profile-setup');
+    context.go('/agreement');
   }
 
   Future<void> _loginWithKakao(BuildContext context) async {
@@ -58,7 +58,7 @@ class LoginScreen extends StatelessWidget {
     );
 
     if (response.isNewUser) {
-      context.go('/profile-setup');
+      context.go('/agreement');
     } else {
       context.go('/home');
     }
@@ -79,7 +79,7 @@ class LoginScreen extends StatelessWidget {
     );
 
     if (response.isNewUser) {
-      context.go('/profile-setup');
+      context.go('/agreement');
     } else {
       context.go('/home');
     }

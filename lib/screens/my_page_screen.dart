@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../common/constants.dart';
 import 'main_layout.dart';
 
 class MyPageScreen extends StatefulWidget {
@@ -15,17 +16,14 @@ class _MyPageScreenState extends State<MyPageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MainLayout(
-      currentIndex: 3,
-      child: Padding(
+    return Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
             _buildProfileCard(context),
           ],
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildProfileCard(BuildContext context) {
@@ -65,7 +63,11 @@ class _MyPageScreenState extends State<MyPageScreen> {
             children: [
               const CircleAvatar(
                 radius: 30,
-                backgroundImage: NetworkImage('https://via.placeholder.com/150'),
+                backgroundColor: Color(0xFFF4F4F4),
+                child: Text(
+                  '🙂',
+                  style: TextStyle(fontSize: 28),
+                ),
               ),
               const SizedBox(width: 16),
               Column(

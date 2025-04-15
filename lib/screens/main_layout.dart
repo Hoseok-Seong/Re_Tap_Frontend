@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import '../common/constants.dart';
+import 'home_screen.dart';
+import 'letter_list_screen.dart';
+import 'letter_write_screen.dart';
+import 'my_page_screen.dart';
 
 class MainLayout extends StatelessWidget {
-  final Widget child;
   final int currentIndex;
 
   const MainLayout({
     super.key,
-    required this.child,
     required this.currentIndex,
   });
 
@@ -26,7 +28,8 @@ class MainLayout extends StatelessWidget {
         centerTitle: true,
         title: Row(
           children: [
-            Image.asset('assets/icons/naver_icon.png', width: 28),  // 앱 아이콘
+            // Image.asset('assets/icons/naver_icon.png', width: 28),
+            const Text('📨'),
             const SizedBox(width: 8),
             const Text(
               'Read Later',
@@ -46,7 +49,17 @@ class MainLayout extends StatelessWidget {
           )
         ],
       ),
-      body: SafeArea(child: child),
+      body: SafeArea(
+        child: IndexedStack(
+          index: currentIndex,
+          children: const [
+            HomeScreen(),
+            LetterWriteScreen(),
+            LetterListScreen(),
+            MyPageScreen(),
+          ],
+        ),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: currentIndex,

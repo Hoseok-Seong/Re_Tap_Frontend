@@ -80,9 +80,7 @@ class _LetterWriteScreenState extends State<LetterWriteScreen> {
         ? DateFormat('yyyy-MM-dd').format(_selectedDate!)
         : "도착 날짜 선택";
 
-    return MainLayout(
-      currentIndex: 1,
-      child: SingleChildScrollView(
+    return SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -170,8 +168,7 @@ class _LetterWriteScreenState extends State<LetterWriteScreen> {
             )
           ],
         ),
-      ),
-    );
+      );
   }
 
   Widget _inputCard({required Widget child}) {

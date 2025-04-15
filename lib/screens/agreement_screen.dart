@@ -45,7 +45,8 @@ class _AgreementScreenState extends State<AgreementScreen> {
   }
 
   void _saveAgreement() {
-    // 약관 저장 후 다음 화면으로 이동
+    // TODO: 약관 저장 후 다음 화면으로 이동
+    context.go('/welcome');
   }
 
   Widget _buildAgreementTile({

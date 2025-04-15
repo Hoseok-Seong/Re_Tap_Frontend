@@ -9,9 +9,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MainLayout(
-      currentIndex: 0,
-      child: SingleChildScrollView(
+    return SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -27,8 +25,7 @@ class HomeScreen extends StatelessWidget {
             _buildArrivalLetter(),
           ],
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildBanner() {
