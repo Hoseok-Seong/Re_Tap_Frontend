@@ -2,17 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:future_letter/common/constants.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:future_letter/dto/letter/letter_create_req.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'main_layout.dart';
+import '../provider/letter_provider.dart';
 
-class LetterWriteScreen extends StatefulWidget {
+class LetterWriteScreen extends ConsumerStatefulWidget {
   const LetterWriteScreen({super.key});
 
   @override
-  State<LetterWriteScreen> createState() => _LetterWriteScreenState();
+  ConsumerState<LetterWriteScreen> createState() => _LetterWriteScreenState();
 }
 
-class _LetterWriteScreenState extends State<LetterWriteScreen> {
+class _LetterWriteScreenState extends ConsumerState<LetterWriteScreen> {
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
   DateTime? _selectedDate;
@@ -34,45 +36,108 @@ class _LetterWriteScreenState extends State<LetterWriteScreen> {
     }
   }
 
-  void _saveLetter() {
-    if (_titleController.text.isEmpty ||
-        _contentController.text.isEmpty) {
+  // void _saveLetter() {
+  //   if (_titleController.text.isEmpty ||
+  //       _contentController.text.isEmpty) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text("제목, 내용을 모두 입력해주세요")),
+  //     );
+  //     return;
+  //   }
+  //
+  //   print("제목: ${_titleController.text}");
+  //   print("내용: ${_contentController.text}");
+  //   print("도착날짜: $_selectedDate");
+  //   print("잠금여부: $_isLocked");
+  //
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     const SnackBar(content: Text("편지가 저장되었습니다!")),
+  //   );
+  //   context.pop();
+  // }
+  void _saveLetter() async {
+    if (_titleController.text.isEmpty || _contentController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("제목, 내용을 모두 입력해주세요")),
       );
       return;
     }
 
-    print("제목: ${_titleController.text}");
-    print("내용: ${_contentController.text}");
-    print("도착날짜: $_selectedDate");
-    print("잠금여부: $_isLocked");
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("편지가 저장되었습니다!")),
+    final req = LetterCreateReq(
+      title: _titleController.text,
+      content: _contentController.text,
+      isLocked: _isLocked,
+      arrivalDate: _isLocked ? _selectedDate : null,
+      isSend: true, // 진짜 부치는 편지
     );
-    context.pop();
+
+    try {
+      final letterId = await ref.read(createLetterProvider(req).future);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("편지가 저장되었습니다!")),
+      );
+
+      context.pop(); // 뒤로 가기
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("오류 발생: $e")),
+      );
+    }
   }
 
-  void _saveTempLetter() {
-    if (_titleController.text.isEmpty ||
-        _contentController.text.isEmpty) {
+
+  // void _saveTempLetter() {
+  //   if (_titleController.text.isEmpty ||
+  //       _contentController.text.isEmpty) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text("제목, 내용을 모두 입력해주세요")),
+  //     );
+  //     return;
+  //   }
+  //
+  //   print("제목: ${_titleController.text}");
+  //   print("내용: ${_contentController.text}");
+  //   print("도착날짜: $_selectedDate");
+  //   print("잠금여부: $_isLocked");
+  //
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     const SnackBar(content: Text("편지가 저장되었습니다!")),
+  //   );
+  //   context.pop();
+  // }
+
+  void _saveTempLetter() async {
+    if (_titleController.text.isEmpty || _contentController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("제목, 내용을 모두 입력해주세요")),
       );
       return;
     }
 
-    print("제목: ${_titleController.text}");
-    print("내용: ${_contentController.text}");
-    print("도착날짜: $_selectedDate");
-    print("잠금여부: $_isLocked");
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("편지가 저장되었습니다!")),
+    final req = LetterCreateReq(
+      title: _titleController.text,
+      content: _contentController.text,
+      isLocked: _isLocked,
+      arrivalDate: _isLocked ? _selectedDate : null,
+      isSend: false, // 임시저장
     );
-    context.pop();
+
+    try {
+      final letterId = await ref.read(createLetterProvider(req).future);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("임시 저장 완료!")),
+      );
+
+      context.pop();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("오류 발생: $e")),
+      );
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {

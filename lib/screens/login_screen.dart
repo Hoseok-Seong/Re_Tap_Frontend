@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:future_letter/dto/auth/oauth_check_req.dart';
+import 'package:future_letter/dto/auth/oauth_check_resp.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
-import '../service/login_service.dart';
+import '../service/auth_service.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
 
-  final loginService = LoginService();
+  final authService = AuthService();
 
   Future<void> _loginWithGoogle(BuildContext context) async {
     final GoogleSignIn googleSignIn = GoogleSignIn();
@@ -26,18 +28,16 @@ class LoginScreen extends StatelessWidget {
       throw Exception('Google AccessToken 없음');
     }
 
-    // final response = await loginService.oauthLogin(
-    //   provider: 'google',
-    //   accessToken: accessToken,
-    // );
-    //
-    // if (response.isNewUser) {
-    //   context.go('/agreement');
-    // } else {
-    //   context.go('/home');
-    // }
+    final response = await authService.checkUser(
+      provider: 'google',
+      accessToken: accessToken,
+    );
 
-    context.go('/agreement');
+    if (response.isNewUser) {
+      context.go('/agreement', extra: OauthCheckReq(provider: 'google', accessToken: accessToken));
+    } else {
+      context.go('/home');
+    }
   }
 
   Future<void> _loginWithKakao(BuildContext context) async {
@@ -52,13 +52,13 @@ class LoginScreen extends StatelessWidget {
 
     final accessToken = token.accessToken;
 
-    final response = await loginService.oauthLogin(
+    final response = await authService.checkUser(
       provider: 'kakao',
       accessToken: accessToken,
     );
 
     if (response.isNewUser) {
-      context.go('/agreement');
+      context.go('/agreement', extra: OauthCheckReq(provider: 'google', accessToken: accessToken));
     } else {
       context.go('/home');
     }
@@ -71,15 +71,15 @@ class LoginScreen extends StatelessWidget {
       throw Exception('네이버 로그인 실패');
     }
 
-    final naverAccessToken = result.accessToken;
+    final accessToken = result.accessToken.accessToken;
 
-    final response = await loginService.oauthLogin(
+    final response = await authService.checkUser(
       provider: 'naver',
-      accessToken: naverAccessToken.accessToken,
+      accessToken: accessToken,
     );
 
     if (response.isNewUser) {
-      context.go('/agreement');
+      context.go('/agreement', extra: OauthCheckReq(provider: 'google', accessToken: accessToken));
     } else {
       context.go('/home');
     }

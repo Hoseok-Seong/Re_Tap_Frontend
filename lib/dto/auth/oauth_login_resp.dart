@@ -1,11 +1,11 @@
-class LoginResponse {
+class OauthLoginResp {
   final int userId;
   final String username;
   final String accessToken;
   final String refreshToken;
   final bool isNewUser;
 
-  LoginResponse({
+  OauthLoginResp({
     required this.userId,
     required this.username,
     required this.accessToken,
@@ -13,8 +13,8 @@ class LoginResponse {
     required this.isNewUser,
   });
 
-  factory LoginResponse.fromJson(Map<String, dynamic> json) {
-    return LoginResponse(
+  factory OauthLoginResp.fromJson(Map<String, dynamic> json) {
+    return OauthLoginResp(
       userId: json['userId'],
       username: json['username'],
       accessToken: json['accessToken'],

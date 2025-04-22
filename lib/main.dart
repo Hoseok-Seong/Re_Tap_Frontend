@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'routes/app_router.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() async{
   await dotenv.load(fileName: 'config/.env');
@@ -12,7 +13,7 @@ void main() async{
     nativeAppKey: dotenv.env['kakao_nativeAppKey'],
   );
 
-  runApp(const FutureLetterApp());
+  runApp(ProviderScope(child: FutureLetterApp()));
 }
 
 class FutureLetterApp extends StatelessWidget {

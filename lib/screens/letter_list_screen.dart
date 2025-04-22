@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../common/constants.dart';
-import '../dto/letter.dart';
+import '../dto/letter/letter.dart';
 import 'main_layout.dart';
 
 class LetterListScreen extends StatelessWidget {

@@ -35,23 +35,38 @@ class _MainLayoutState extends State<MainLayout> {
   }
 
   Future<void> _maybeShowGuide() async {
+    // final prefs = await SharedPreferences.getInstance();
+    // // final hasShownGuide = prefs.getBool('hasShownGuide') ?? false;
+    // final hasShownGuide = false;
+    //
+    // if (!hasShownGuide && mounted) {
+    //   await Future.delayed(const Duration(milliseconds: 300));
+    //
+    //   WidgetsBinding.instance.addPostFrameCallback((_) {
+    //     ShowCaseWidget.of(myShowCaseContext).startShowCase([
+    //       _writeKey,
+    //       _lettersKey,
+    //       _notificationKey,
+    //     ]);
+    //   });
+    //
+    //   await prefs.setBool('hasShownGuide', true);
+    // }
     final prefs = await SharedPreferences.getInstance();
-    // final hasShownGuide = prefs.getBool('hasShownGuide') ?? false;
-    final hasShownGuide = false;
+    final hasShownGuide = prefs.getBool('hasShownGuide') ?? false;
 
-    if (!hasShownGuide && mounted) {
-      await Future.delayed(const Duration(milliseconds: 300));
+    if (hasShownGuide) return; // 이미 본 경우 종료
 
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ShowCaseWidget.of(myShowCaseContext).startShowCase([
-          _writeKey,
-          _lettersKey,
-          _notificationKey,
-        ]);
-      });
+    await Future.delayed(const Duration(milliseconds: 300));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ShowCaseWidget.of(myShowCaseContext).startShowCase([
+        _writeKey,
+        _lettersKey,
+        _notificationKey,
+      ]);
+    });
 
-      await prefs.setBool('hasShownGuide', true);
-    }
+    await prefs.setBool('hasShownGuide', true); // 이후에는 안 보이게
   }
 
   @override

@@ -47,8 +47,12 @@ dependencies:
 
   dio: ^5.4.0
 
+  flutter_riverpod: ^2.4.0
+
   smooth_page_indicator: ^1.1.0
   showcaseview: ^2.0.3
+
+  flutter_secure_storage: ^9.0.0
 
   flutter_localizations:
     sdk: flutter

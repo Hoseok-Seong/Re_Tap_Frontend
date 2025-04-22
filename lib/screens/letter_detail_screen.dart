@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:future_letter/common/constants.dart';
 import 'package:intl/intl.dart';
-import '../dto/letter.dart';
+import '../dto/letter/letter.dart';
 
 class LetterDetailScreen extends StatelessWidget {
   final String letterId;

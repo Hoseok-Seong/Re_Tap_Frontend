@@ -1,8 +1,8 @@
-class LoginRequest {
+class OauthRegisterReq {
   final String provider;
   final String accessToken;
 
-  LoginRequest({
+  OauthRegisterReq({
     required this.provider,
     required this.accessToken,
   });

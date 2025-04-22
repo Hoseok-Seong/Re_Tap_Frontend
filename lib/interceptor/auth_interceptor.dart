@@ -1,0 +1,72 @@
+import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../provider/auth_provider.dart';
+import '../service/auth_service.dart';
+import '../token/token_storage.dart';
+
+class AuthInterceptor extends Interceptor {
+  final Ref ref;
+
+  final authService = AuthService();
+
+  AuthInterceptor(this.ref);
+
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+    if (options.path.contains('/api/')) {
+      final token = await TokenStorage.getAccessToken();
+      if (token != null) {
+        options.headers['Authorization_Access'] = 'Bearer $token';
+      }
+    }
+    handler.next(options);
+  }
+
+  @override
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
+    final code = err.response?.data['code'];
+
+    if (code == 'J003') {
+      final refresh = await TokenStorage.getRefreshToken();
+      if (refresh == null) return _forceLogout(handler, err);
+
+      try {
+        final response = await authService.refreshToken(
+          refreshToken: refresh,
+        );
+
+        final retryReq = await _retry(err.requestOptions, response.accessToken);
+        return handler.resolve(retryReq);
+      } catch (e) {
+        return _forceLogout(handler, err);
+      }
+    }
+
+    if (code == 'J004' || code == 'J005') {
+      return _forceLogout(handler, err);
+    }
+
+    handler.next(err);
+  }
+
+  Future<Response<dynamic>> _retry(RequestOptions req, String newAccessToken) {
+    final dio = Dio();
+    final options = Options(
+      method: req.method,
+      headers: Map.of(req.headers)..['Authorization_Access'] = 'Bearer $newAccessToken',
+    );
+    return dio.request(
+      req.path,
+      data: req.data,
+      queryParameters: req.queryParameters,
+      options: options,
+    );
+  }
+
+  void _forceLogout(ErrorInterceptorHandler handler, DioException err) {
+    TokenStorage.clear();
+    ref.read(authStateProvider.notifier).state = AuthState.loggedOut;
+    handler.next(err);
+  }
+}

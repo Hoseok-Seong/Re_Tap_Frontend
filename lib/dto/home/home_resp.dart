@@ -1,11 +1,11 @@
-class HomeApiResponse {
+class HomeResp {
   final String todayQuote;
   final String quoteAuthor;
   final String todayQuestion;
   final String? recentLetter;
   final int arrivalCount;
 
-  HomeApiResponse({
+  HomeResp({
     required this.todayQuote,
     required this.quoteAuthor,
     required this.todayQuestion,
