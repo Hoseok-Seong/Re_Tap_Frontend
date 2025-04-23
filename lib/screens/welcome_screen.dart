@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../common/constants.dart';
+import '../provider/user_provider.dart';
 
-class WelcomeScreen extends StatefulWidget {
+class WelcomeScreen extends ConsumerStatefulWidget {
   const WelcomeScreen({super.key});
 
   @override
-  State<WelcomeScreen> createState() => _WelcomeScreenState();
+  ConsumerState<WelcomeScreen> createState() => _WelcomeScreenState();
 }
 
-class _WelcomeScreenState extends State<WelcomeScreen>
-    with SingleTickerProviderStateMixin {
+class _WelcomeScreenState extends ConsumerState<WelcomeScreen> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _slideAnimation;
   late Animation<double> _fadeAnimation;
@@ -45,6 +46,19 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     _controller.dispose();
     _nicknameController.dispose();
     super.dispose();
+  }
+
+  Future<void> _submitNickname() async {
+    final nickname = _nicknameController.text.trim();
+
+    try {
+      await ref.read(updateNicknameProvider(nickname).future);
+      context.go('/home');
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('닉네임 저장에 실패했어요: $e')),
+      );
+    }
   }
 
   @override
@@ -105,13 +119,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                                 ? AppColors.primary
                                 : Colors.grey.shade300,
                           ),
-                          onPressed: _isNicknameFilled
-                              ? () {
-                            final nickname = _nicknameController.text.trim();
-                            // TODO: 닉네임 저장 로직
-                            context.go('/home');
-                          }
-                              : null,
+                          onPressed: _isNicknameFilled ? _submitNickname : null,
                           child: const Text('시작하기'),
                         ),
                       )

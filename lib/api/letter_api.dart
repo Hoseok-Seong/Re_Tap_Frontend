@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:future_letter/dto/letter/letter_create_resp.dart';
 import '../dto/letter/letter_create_req.dart';
 
 class LetterApi {
@@ -6,8 +7,9 @@ class LetterApi {
 
   LetterApi(this._dio);
 
-  Future<int> createLetter(LetterCreateReq req) async {
-    final res = await _dio.post('/api/v1/letters', data: req.toJson());
-    return res.data['letterId'];
+  Future<LetterCreateResp> createLetter(LetterCreateReq request) async {
+    final response = await _dio.post('/api/v1/letters', data: request.toJson());
+
+    return LetterCreateResp.fromJson(response.data);
   }
 }

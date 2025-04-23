@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../common/constants.dart';
 import '../common/privacy.dart';
 import '../common/terms.dart';
+import '../dto/auth/oauth_check_req.dart';
+import '../service/auth_service.dart';
 
 class AgreementScreen extends StatefulWidget {
   const AgreementScreen({super.key});
@@ -43,9 +45,21 @@ class _AgreementScreenState extends State<AgreementScreen> {
     });
   }
 
-  void _saveAgreement() {
-    // TODO: 약관 저장 후 다음 화면으로 이동
-    context.go('/welcome');
+  void _saveAgreement() async {
+    try {
+      final authService = AuthService();
+
+      await authService.registerUser(
+        provider: oauthInfo.provider,
+        accessToken: oauthInfo.accessToken,
+      );
+
+      context.go('/welcome');
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('회원가입 중 오류 발생: $e')),
+      );
+    }
   }
 
   Widget _buildAgreementTile({
@@ -85,6 +99,14 @@ class _AgreementScreenState extends State<AgreementScreen> {
         const Divider(),
       ],
     );
+  }
+
+  late final OauthCheckReq oauthInfo;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    oauthInfo = GoRouterState.of(context).extra as OauthCheckReq;
   }
 
   @override

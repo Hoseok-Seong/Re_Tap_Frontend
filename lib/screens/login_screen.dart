@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:future_letter/dto/auth/oauth_check_req.dart';
-import 'package:future_letter/dto/auth/oauth_check_resp.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
