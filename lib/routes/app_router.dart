@@ -1,9 +1,11 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:future_letter/screens/agreement_screen.dart';
 import 'package:future_letter/screens/my_page_screen.dart';
 import 'package:future_letter/screens/notification_screen.dart';
 import 'package:future_letter/screens/welcome_screen.dart';
 import 'package:go_router/go_router.dart';
 
+import '../provider/auth_provider.dart';
 import '../screens/main_layout.dart';
 import '../screens/on_boarding_screen.dart';
 import '../screens/settings_screen.dart';
@@ -90,5 +92,17 @@ class AppRouter {
         builder: (context, state) => const OnboardingScreen(),
       ),
     ],
+    redirect: (context, state) {
+      final container = ProviderScope.containerOf(context, listen: false);
+      final authState = container.read(authStateProvider);
+
+      if (authState == AuthState.loggedOut) {
+        return '/login';
+      }
+      if (authState == AuthState.loggedIn && state.path == '/login') {
+        return '/home';
+      }
+      return null;
+    },
   );
 }

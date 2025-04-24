@@ -7,8 +7,8 @@ class LetterService {
 
   LetterService(this._api);
 
-  Future<LetterCreateResp> create(LetterCreateReq request) async {
-    final response = _api.createLetter(request);
+  Future<LetterCreateResp> createOrUpdate(LetterCreateReq request) async {
+    final response = _api.createOrUpdateLetter(request);
 
     return response;
   }

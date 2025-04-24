@@ -15,8 +15,8 @@ final dioProvider = Provider<Dio>((ref) {
       contentType: 'application/json',
     ),
   );
-  
-  dio.interceptors.add(AuthInterceptor(ref));
+
+  dio.interceptors.add(AuthInterceptor(ref, dio));
   
   return dio;
 });

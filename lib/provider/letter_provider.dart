@@ -18,7 +18,7 @@ final dioProvider = Provider<Dio>((ref) {
     ),
   );
 
-  dio.interceptors.add(AuthInterceptor(ref));
+  dio.interceptors.add(AuthInterceptor(ref, dio));
 
   return dio;
 });
@@ -33,7 +33,12 @@ final letterServiceProvider = Provider<LetterService>((ref) {
   return LetterService(api);
 });
 
-final createLetterProvider = FutureProvider.family.autoDispose<LetterCreateResp, LetterCreateReq>((ref, req) async {
+// final createLetterProvider = FutureProvider.family.autoDispose<LetterCreateResp, LetterCreateReq>((ref, req) async {
+//   final service = ref.read(letterServiceProvider);
+//   return service.create(req);
+// });
+
+final createOrUpdateLetterProvider = FutureProvider.family.autoDispose<LetterCreateResp, LetterCreateReq>((ref, req) async {
   final service = ref.read(letterServiceProvider);
-  return service.create(req);
+  return service.createOrUpdate(req);
 });

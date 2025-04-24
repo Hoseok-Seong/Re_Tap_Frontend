@@ -1,4 +1,5 @@
 class LetterCreateReq {
+  final int? letterId;
   final String title;
   final String content;
   final bool isLocked;
@@ -6,6 +7,7 @@ class LetterCreateReq {
   final bool isSend;
 
   LetterCreateReq({
+    this.letterId,
     required this.title,
     required this.content,
     required this.isLocked,
@@ -14,6 +16,7 @@ class LetterCreateReq {
   });
 
   Map<String, dynamic> toJson() => {
+    'letterId': letterId,
     'title': title,
     'content': content,
     'isLocked': isLocked,

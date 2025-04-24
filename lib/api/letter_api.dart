@@ -7,7 +7,7 @@ class LetterApi {
 
   LetterApi(this._dio);
 
-  Future<LetterCreateResp> createLetter(LetterCreateReq request) async {
+  Future<LetterCreateResp> createOrUpdateLetter(LetterCreateReq request) async {
     final response = await _dio.post('/api/v1/letters', data: request.toJson());
 
     return LetterCreateResp.fromJson(response.data);

@@ -7,10 +7,11 @@ import '../token/token_storage.dart';
 
 class AuthInterceptor extends Interceptor {
   final Ref ref;
+  final Dio _dio;
 
   final authService = AuthService();
 
-  AuthInterceptor(this.ref);
+  AuthInterceptor(this.ref, this._dio);
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
@@ -43,7 +44,7 @@ class AuthInterceptor extends Interceptor {
       }
     }
 
-    if (code == 'J004' || code == 'J005') {
+    if (code == 'J001' || code == 'J002' || code == 'J004' || code == 'J005') {
       return _forceLogout(handler, err);
     }
 
@@ -51,15 +52,13 @@ class AuthInterceptor extends Interceptor {
   }
 
   Future<Response<dynamic>> _retry(RequestOptions req, String newAccessToken) {
-    final dio = Dio();
     final options = Options(
       method: req.method,
       headers: Map.of(req.headers)..['Authorization_Access'] = newAccessToken,
     );
-    return dio.request(
-      req.path,
+    return _dio.requestUri(
+      req.uri,
       data: req.data,
-      queryParameters: req.queryParameters,
       options: options,
     );
   }

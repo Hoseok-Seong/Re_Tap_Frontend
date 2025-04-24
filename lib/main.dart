@@ -16,11 +16,11 @@ void main() async{
   runApp(ProviderScope(child: FutureLetterApp()));
 }
 
-class FutureLetterApp extends StatelessWidget {
-  const FutureLetterApp({Key? key}) : super(key: key);
+class FutureLetterApp extends ConsumerWidget {
+  const FutureLetterApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'FutureLetter',
