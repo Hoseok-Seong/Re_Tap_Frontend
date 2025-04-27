@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../dto/letter/letter_create_req.dart';
-import '../dto/letter/letter_create_resp.dart';
 import '../provider/letter_provider.dart';
 
 class LetterWriteScreen extends ConsumerStatefulWidget {
@@ -20,13 +19,19 @@ class _LetterWriteScreenState extends ConsumerState<LetterWriteScreen> {
   DateTime? _selectedDate;
   bool _isLocked = false;
   int? _letterId;
-  bool _isChanged = false;
 
   @override
   void initState() {
     super.initState();
-    _titleController.addListener(() => setState(() => _isChanged = true));
-    _contentController.addListener(() => setState(() => _isChanged = true));
+    _titleController.addListener(_onChanged);
+    _contentController.addListener(_onChanged);
+  }
+
+  void _onChanged() {
+    if (!ref.read(letterEditChangedProvider)) {
+      ref.read(letterEditChangedProvider.notifier).state = true;
+    }
+    setState(() {});
   }
 
   Future<void> _pickDate() async {
@@ -41,8 +46,8 @@ class _LetterWriteScreenState extends ConsumerState<LetterWriteScreen> {
     if (picked != null) {
       setState(() {
         _selectedDate = picked;
-        _isChanged = true;
       });
+      ref.read(letterEditChangedProvider.notifier).state = true;
     }
   }
 
@@ -61,7 +66,7 @@ class _LetterWriteScreenState extends ConsumerState<LetterWriteScreen> {
     try {
       final resp = await ref.read(createOrUpdateLetterProvider(req).future);
       _letterId ??= resp.letterId;
-      _isChanged = false;
+      ref.read(letterEditChangedProvider.notifier).state = false;
       _showSnack("임시 저장 완료");
     } catch (e) {
       _showSnack("저장 실패: $e");
@@ -98,15 +103,9 @@ class _LetterWriteScreenState extends ConsumerState<LetterWriteScreen> {
       await ref.read(createOrUpdateLetterProvider(req).future);
       _showSnack("편지를 부쳤습니다!");
 
-      // ✅ 상태 초기화
-      _titleController.clear();
-      _contentController.clear();
-      _selectedDate = null;
-      _isLocked = false;
-      _letterId = null;
-      _isChanged = false;
-
-      context.go("/letters"); // 이동은 마지막에
+      _resetState();
+      ref.invalidate(letterListProvider);
+      context.go("/letters");
     } catch (e) {
       _showSnack("부치기 실패: $e");
     }
@@ -114,21 +113,20 @@ class _LetterWriteScreenState extends ConsumerState<LetterWriteScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<bool>(resetLetterWriteProvider, (previous, next) {
+      if (next == true) {
+        _resetState();
+        ref.read(resetLetterWriteProvider.notifier).state = false;
+      }
+    });
+
     return WillPopScope(
       onWillPop: () async {
-        if (_isChanged) {
-          final discard = await showDialog<bool>(
-            context: context,
-            builder: (_) => AlertDialog(
-              title: const Text("저장되지 않은 내용이 있어요"),
-              content: const Text("저장하지 않으면 내용이 사라집니다. 그래도 이동하시겠습니까?"),
-              actions: [
-                TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("취소")),
-                ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text("이동")),
-              ],
-            ),
-          );
-          return discard ?? false;
+        final isChanged = ref.read(letterEditChangedProvider);
+
+        if (isChanged) {
+          final discard = await showDiscardConfirmDialog(context, _resetState);
+          return discard;
         }
         return true;
       },
@@ -154,31 +152,65 @@ class _LetterWriteScreenState extends ConsumerState<LetterWriteScreen> {
           ),
           const SizedBox(height: 24),
 
-          // 제목
+          // 제목 글자수
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                '${_titleController.text.length} / 50',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: _titleController.text.length >= 45 ? Colors.red : Colors.grey,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+
+          // 제목 입력
           TextField(
             controller: _titleController,
+            maxLength: 50,
             decoration: const InputDecoration(
               labelText: '제목',
               hintText: '편지의 제목을 작성해 주세요',
               border: OutlineInputBorder(),
+              counterText: "",
             ),
           ),
           const SizedBox(height: 16),
 
-          // 내용
+          // 내용 글자수
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                '${_contentController.text.length} / 2000',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: _contentController.text.length >= 1800 ? Colors.red : Colors.grey,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+
+          // 내용 입력
           TextField(
             controller: _contentController,
             maxLines: 15,
+            maxLength: 2000,
             decoration: const InputDecoration(
               labelText: '내용',
               hintText: '편지의 내용을 작성해 주세요',
               border: OutlineInputBorder(),
               alignLabelWithHint: true,
+              counterText: "",
             ),
           ),
           const SizedBox(height: 16),
 
-          // 잠금 선택
+          // 잠금 편지 설정
           _inputCard(
             child: Column(
               children: [
@@ -187,9 +219,9 @@ class _LetterWriteScreenState extends ConsumerState<LetterWriteScreen> {
                   onChanged: (value) {
                     setState(() {
                       _isLocked = value;
-                      _isChanged = true;
                       if (!value) _selectedDate = null;
                     });
+                    ref.read(letterEditChangedProvider.notifier).state = true;
                   },
                   title: const Text(
                     '잠금 편지로 작성할까요? 🔒',
@@ -253,6 +285,39 @@ class _LetterWriteScreenState extends ConsumerState<LetterWriteScreen> {
       ),
       child: child,
     );
+  }
+
+  Future<bool> showDiscardConfirmDialog(BuildContext context, VoidCallback onDiscard) async {
+    final discard = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("저장되지 않은 내용이 있어요", style: TextStyle(fontSize: 20)),
+        content: const Text("저장하지 않으면 작성한 내용이 사라집니다."),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text("취소"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              onDiscard();
+              Navigator.pop(context, true);
+            },
+            child: const Text("이동"),
+          ),
+        ],
+      ),
+    );
+    return discard ?? false;
+  }
+
+  void _resetState() {
+    _titleController.clear();
+    _contentController.clear();
+    _selectedDate = null;
+    _isLocked = false;
+    _letterId = null;
+    ref.read(letterEditChangedProvider.notifier).state = false;
   }
 
   void _showSnack(String message) {

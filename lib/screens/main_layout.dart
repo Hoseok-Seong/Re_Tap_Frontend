@@ -1,57 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:showcaseview/showcaseview.dart';
 import '../common/constants.dart';
+import '../provider/letter_provider.dart';
 import 'home_screen.dart';
 import 'letter_list_screen.dart';
 import 'letter_write_screen.dart';
 import 'my_page_screen.dart';
 
-class MainLayout extends StatefulWidget {
+class MainLayout extends ConsumerStatefulWidget {
   final int currentIndex;
 
-  const MainLayout({
-    super.key,
-    required this.currentIndex,
-  });
+  const MainLayout({super.key, required this.currentIndex});
 
   @override
-  State<MainLayout> createState() => _MainLayoutState();
+  ConsumerState<MainLayout> createState() => _MainLayoutState();
 }
 
-class _MainLayoutState extends State<MainLayout> {
+class _MainLayoutState extends ConsumerState<MainLayout> {
   final GlobalKey _writeKey = GlobalKey();
   final GlobalKey _lettersKey = GlobalKey();
   final GlobalKey _notificationKey = GlobalKey();
 
   late BuildContext myShowCaseContext;
 
+  late int _currentIndex;
+
   @override
   void initState() {
     super.initState();
+    _currentIndex = widget.currentIndex;
     Future.delayed(Duration.zero, _maybeShowGuide);
   }
 
   Future<void> _maybeShowGuide() async {
-    // final prefs = await SharedPreferences.getInstance();
-    // // final hasShownGuide = prefs.getBool('hasShownGuide') ?? false;
-    // final hasShownGuide = false;
-    //
-    // if (!hasShownGuide && mounted) {
-    //   await Future.delayed(const Duration(milliseconds: 300));
-    //
-    //   WidgetsBinding.instance.addPostFrameCallback((_) {
-    //     ShowCaseWidget.of(myShowCaseContext).startShowCase([
-    //       _writeKey,
-    //       _lettersKey,
-    //       _notificationKey,
-    //     ]);
-    //   });
-    //
-    //   await prefs.setBool('hasShownGuide', true);
-    // }
     final prefs = await SharedPreferences.getInstance();
     final hasShownGuide = prefs.getBool('hasShownGuide') ?? false;
 
@@ -139,7 +124,33 @@ class _MainLayoutState extends State<MainLayout> {
               unselectedItemColor: AppColors.text.withOpacity(0.5),
               showSelectedLabels: true,
               showUnselectedLabels: true,
-              onTap: (index) {
+              onTap: (index) async {
+                final isChanged = ref.read(letterEditChangedProvider);
+
+                if (widget.currentIndex == 1 && isChanged) {
+                  final discard = await showDialog<bool>(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: const Text("저장되지 않은 내용이 있어요", style: TextStyle(fontSize: 20)),
+                      content: const Text("저장하지 않으면 작성한 내용이 사라집니다."),
+                      actions: [
+                        TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("취소")),
+                        ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text("이동")),
+                      ],
+                    ),
+                  );
+
+                  if (discard != true) return;
+
+                  ref.read(letterEditChangedProvider.notifier).state = false;
+                  ref.read(resetLetterWriteProvider.notifier).state = true;
+                }
+
+                if (widget.currentIndex == 1) {
+                  ref.read(letterEditChangedProvider.notifier).state = false;
+                  ref.read(resetLetterWriteProvider.notifier).state = true;
+                }
+
                 switch (index) {
                   case 0:
                     context.go('/home');
@@ -148,6 +159,7 @@ class _MainLayoutState extends State<MainLayout> {
                     context.go('/write');
                     break;
                   case 2:
+                    ref.invalidate(letterListProvider);
                     context.go('/letters');
                     break;
                   case 3:

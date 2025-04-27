@@ -9,7 +9,6 @@ class UserApi {
 
   Future<UpdateProfileResp> updateProfile(UpdateProfileReq request) async {
     final response = await _dio.post('/api/v1/user/profile', data: request.toJson());
-
     return UpdateProfileResp.fromJson(response.data);
   }
 }
