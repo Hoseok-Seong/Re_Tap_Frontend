@@ -6,7 +6,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:showcaseview/showcaseview.dart';
 import '../common/constants.dart';
 import '../dto/letter/letter_list_resp.dart';
+import '../provider/home_provider.dart';
 import '../provider/letter_provider.dart';
+import '../provider/my_page_provider.dart';
 import 'home_screen.dart';
 import 'letter_list_screen.dart';
 import 'letter_write_screen.dart';
@@ -167,6 +169,7 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
 
                 switch (index) {
                   case 0:
+                    ref.invalidate(homeProvider);
                     context.go('/home');
                     break;
                   case 1:
@@ -177,6 +180,7 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
                     context.go('/letters');
                     break;
                   case 3:
+                    ref.invalidate(myPageProvider);
                     context.go('/mypage');
                     break;
                 }

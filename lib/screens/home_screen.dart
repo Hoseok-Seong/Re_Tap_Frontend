@@ -1,31 +1,63 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../common/constants.dart';
-import 'main_layout.dart';
+import '../dto/home/home_resp.dart';
+import '../provider/home_provider.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+
+  String _formatDate(DateTime date) {
+    return '${date.month}/${date.day}';
+  }
+
+  String _formatFullDate(DateTime date) {
+    return '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+
+  bool _refreshed = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // 화면 처음 들어올 때만 invalidate
+    if (!_refreshed) {
+      ref.invalidate(homeProvider);
+      _refreshed = true;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    final homeAsync = ref.watch(homeProvider);
+
+    return homeAsync.when(
+      data: (home) => SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildBanner(),
             const SizedBox(height: 16),
-            _buildTodaySentence(),
-            // const SizedBox(height: 16),
-            // _buildTodayQuestion(),
+            _buildTodaySentence(home.todayQuote),
             const SizedBox(height: 16),
-            _buildRecentLetter(context),
+            _buildRecentLetter(context, home.recentLetters),
             const SizedBox(height: 16),
-            _buildArrivalLetter(),
+            _buildArrivalLetter(home.upcomingLetters),
           ],
         ),
-      );
+      ),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (err, stack) => Center(child: Text('에러 발생: $err')),
+    );
   }
 
   Widget _buildBanner() {
@@ -68,19 +100,16 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTodaySentence() {
+  Widget _buildTodaySentence(Quote quote) {
     return _card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          Text('오늘의 한 문장', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          SizedBox(height: 8),
-          Text(
-            '과거의 나도, 미래의 나도, 결국 지금의 내가 만든다.',
-            style: TextStyle(fontSize: 16),
-          ),
-          SizedBox(height: 4),
-          Text('- FutureLetter', style: TextStyle(color: Colors.grey)),
+        children: [
+          const Text('오늘의 한 문장', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          Text(quote.krContent, style: const TextStyle(fontSize: 16)),
+          const SizedBox(height: 4),
+          Text('- ${quote.author}', style: const TextStyle(color: Colors.grey)),
         ],
       ),
     );
@@ -99,48 +128,76 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRecentLetter(BuildContext context) {
-    bool hasLetter = false; // TODO: 서버 연결 시 처리
+  Widget _buildRecentLetter(BuildContext context, List<RecentLetter> letters) {
+    final hasLetter = letters.isNotEmpty;
 
     return _card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-          const Text('최근 편지', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            GestureDetector(
-              onTap: () => context.go('/write'),
-              child: const Text('전체보기', style: TextStyle(fontSize: 14)),
-            ),
-          ]),
-          const SizedBox(height: 8),
-          hasLetter
-              ? const Text('최근 편지가 있습니다!') // TODO: 편지 preview
-              : Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('아직 부친 편지가 없어요 🥲'),
+              const Text('최근 편지', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               GestureDetector(
-                onTap: () => context.go('/write'),
-                child: const Text(
-                  '편지 쓰러가기 >',
-                  style: TextStyle(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                onTap: () => context.go('/letters'),
+                child: const Text('전체보기', style: TextStyle(fontSize: 14)),
               ),
             ],
           ),
+          const SizedBox(height: 8),
+          hasLetter
+              ? Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: letters
+                .take(3)
+                .map(
+                      (letter) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Icon(Icons.mail, color: AppColors.primary, size: 18),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            '${letter.title}',
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        Text(
+                          '작성일: ${_formatFullDate(letter.createdAt)}',
+                          style: const TextStyle(color: Colors.grey, fontSize: 13),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+                .toList(),
+          )
+              : Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('아직 부친 편지가 없어요 🥲'),
+                  GestureDetector(
+                    onTap: () => context.go('/write'),
+                    child: const Text(
+                      '편지 쓰러가기 >',
+                      style: TextStyle(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
         ],
       ),
     );
   }
 
-  Widget _buildArrivalLetter() {
-    int arrivalCount = 0; // TODO: 서버 연결 시 처리
+  Widget _buildArrivalLetter(List<UpcomingLetter> upcomingLetters) {
+    final count = upcomingLetters.length;
 
     return _card(
       child: Column(
@@ -148,14 +205,41 @@ class HomeScreen extends StatelessWidget {
         children: [
           const Text('도착 예정 편지', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          arrivalCount == 0
+          count == 0
               ? const Text('아직 도착한 편지가 없어요 📭')
-              : Row(
-            children: [
-              const Icon(Icons.mail, color: AppColors.primary),
-              const SizedBox(width: 4),
-              Text('$arrivalCount개 도착 예정!'),
-            ],
+              : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: upcomingLetters
+                .take(3)
+                .map(
+                      (letter) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Row(
+                            children: [
+                              const Icon(Icons.lock, color: AppColors.primary, size: 18),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  letter.title,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Text(
+                          '도착일: ${_formatFullDate(letter.arrivalDate)}',
+                          style: const TextStyle(color: Colors.grey, fontSize: 13),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+                .toList(),
           ),
         ],
       ),

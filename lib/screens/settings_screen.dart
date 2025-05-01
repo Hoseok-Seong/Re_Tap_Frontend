@@ -3,6 +3,8 @@ import 'package:future_letter/common/constants.dart';
 import 'package:future_letter/common/privacy.dart';
 import 'package:future_letter/common/terms.dart';
 
+import '../token/token_storage.dart';
+
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
@@ -55,7 +57,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
                         onPressed: () {
-                          // 로그아웃 처리
+                          TokenStorage.clear();
+                          // ref.read(authStateProvider.notifier).state = AuthState.loggedOut;
+                          // handler.next(err);
                         },
                         child: const Text('로그아웃'),
                       ),

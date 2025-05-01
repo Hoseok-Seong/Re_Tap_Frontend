@@ -1,32 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../common/constants.dart';
-import 'main_layout.dart';
+import '../dto/mypage/my_page_resp.dart';
+import '../provider/my_page_provider.dart';
 
-class MyPageScreen extends StatefulWidget {
+class MyPageScreen extends ConsumerStatefulWidget {
   const MyPageScreen({super.key});
 
   @override
-  State<MyPageScreen> createState() => _MyPageScreenState();
+  ConsumerState<MyPageScreen> createState() => _MyPageScreenState();
 }
 
-class _MyPageScreenState extends State<MyPageScreen> {
+class _MyPageScreenState extends ConsumerState<MyPageScreen> {
   bool _showDescription = false;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            _buildProfileCard(context),
-          ],
-        ),
-      );
+    final myPageAsync = ref.watch(myPageProvider);
+
+    return myPageAsync.when(
+      data: (myPage) =>
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              children: [
+                _buildProfileCard(context, myPage),
+              ],
+            ),
+          ),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (err, stack) => Center(child: Text('에러 발생: $err')),
+    );
   }
 
-  Widget _buildProfileCard(BuildContext context) {
+  Widget _buildProfileCard(BuildContext context, MyPageResp resp) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -72,10 +80,10 @@ class _MyPageScreenState extends State<MyPageScreen> {
               const SizedBox(width: 16),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text('사용자 닉네임', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                children: [
+                  Text(resp.nickname, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                   SizedBox(height: 4),
-                  Text('example@email.com', style: TextStyle(color: Colors.grey)),
+                  Text(resp.username, style: TextStyle(color: Colors.grey)),
                 ],
               ),
             ],

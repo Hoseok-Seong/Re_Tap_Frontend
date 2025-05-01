@@ -22,7 +22,7 @@ class MyPageResp {
       provider: json['provider'],
       nickname: json['nickname'],
       role: json['role'],
-      profileImageUrl: json['profileImageUrl'],
+      profileImageUrl: json['profileImageUrl'] as String?,
     );
   }
 }
