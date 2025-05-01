@@ -5,6 +5,7 @@ import 'package:future_letter/screens/notification_screen.dart';
 import 'package:future_letter/screens/welcome_screen.dart';
 import 'package:go_router/go_router.dart';
 
+import '../dto/letter/letter_list_resp.dart';
 import '../provider/auth_provider.dart';
 import '../screens/main_layout.dart';
 import '../screens/on_boarding_screen.dart';
@@ -45,8 +46,8 @@ class AppRouter {
       GoRoute(
         path: '/write',
         name: 'write',
-        pageBuilder: (context, state) => const NoTransitionPage(
-          child: MainLayout(currentIndex: 1),
+        pageBuilder: (context, state) => NoTransitionPage(
+          child: MainLayout(currentIndex: 1, letter: state.extra as LetterSummary?),
         ),
       ),
       GoRoute(
@@ -90,6 +91,18 @@ class AppRouter {
         path: '/onboarding',
         name: 'onboarding',
         builder: (context, state) => const OnboardingScreen(),
+      ),
+      GoRoute(
+        path: '/main',
+        name: 'main',
+        pageBuilder: (context, state) {
+          final tabParam = state.uri.queryParameters['tab'];
+          final tabIndex = int.tryParse(tabParam ?? '0') ?? 0;
+
+          return NoTransitionPage(
+            child: MainLayout(currentIndex: tabIndex, letter: state.extra as LetterSummary?),
+          );
+        },
       ),
     ],
     redirect: (context, state) {

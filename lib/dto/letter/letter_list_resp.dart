@@ -15,6 +15,7 @@ class LetterListResp {
 class LetterSummary {
   final int letterId;
   final String title;
+  final String content;
   final DateTime? arrivalDate;
   final bool isLocked;
   final bool isArrived;
@@ -25,6 +26,7 @@ class LetterSummary {
   LetterSummary({
     required this.letterId,
     required this.title,
+    required this.content,
     required this.arrivalDate,
     required this.isLocked,
     required this.isArrived,
@@ -37,6 +39,7 @@ class LetterSummary {
     return LetterSummary(
       letterId: json['letterId'],
       title: json['title'],
+      content: json['content'],
       arrivalDate: json['arrivalDate'] != null
           ? DateTime.parse(json['arrivalDate'])
           : null,

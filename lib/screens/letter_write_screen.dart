@@ -4,10 +4,13 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../dto/letter/letter_create_req.dart';
+import '../dto/letter/letter_list_resp.dart';
 import '../provider/letter_provider.dart';
 
 class LetterWriteScreen extends ConsumerStatefulWidget {
-  const LetterWriteScreen({super.key});
+  final LetterSummary? letter;
+
+  const LetterWriteScreen({super.key, this.letter});
 
   @override
   ConsumerState<LetterWriteScreen> createState() => _LetterWriteScreenState();
@@ -23,6 +26,20 @@ class _LetterWriteScreenState extends ConsumerState<LetterWriteScreen> {
   @override
   void initState() {
     super.initState();
+
+    final letter = widget.letter;
+    if (letter != null) {
+      _letterId = letter.letterId;
+      _titleController.text = letter.title;
+      _contentController.text = letter.content;
+      _isLocked = letter.isLocked;
+      _selectedDate = letter.arrivalDate;
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {});
+      });
+    }
+
     _titleController.addListener(_onChanged);
     _contentController.addListener(_onChanged);
   }
@@ -119,7 +136,6 @@ class _LetterWriteScreenState extends ConsumerState<LetterWriteScreen> {
         ref.read(resetLetterWriteProvider.notifier).state = false;
       }
     });
-
     return WillPopScope(
       onWillPop: () async {
         final isChanged = ref.read(letterEditChangedProvider);
@@ -130,9 +146,7 @@ class _LetterWriteScreenState extends ConsumerState<LetterWriteScreen> {
         }
         return true;
       },
-      child: Scaffold(
-        body: _buildFormBody(),
-      ),
+      child: _buildFormBody(),
     );
   }
 

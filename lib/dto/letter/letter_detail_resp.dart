@@ -7,7 +7,7 @@ class LetterDetailResp {
   final bool isArrived;
   final bool isRead;
   final DateTime? readAt;
-  final bool editable;
+  final String status;
 
   LetterDetailResp({
     required this.letterId,
@@ -18,7 +18,7 @@ class LetterDetailResp {
     required this.isArrived,
     required this.isRead,
     required this.readAt,
-    required this.editable,
+    required this.status,
   });
 
   factory LetterDetailResp.fromJson(Map<String, dynamic> json) {
@@ -26,12 +26,16 @@ class LetterDetailResp {
       letterId: json['letterId'],
       title: json['title'],
       content: json['content'],
-      arrivalDate: json['arrivalDate'],
+      arrivalDate: json['arrivalDate'] != null
+          ? DateTime.parse(json['arrivalDate'])
+          : null,
       isLocked: json['isLocked'],
       isArrived: json['isArrived'],
       isRead: json['isRead'],
-      readAt: json['readAt'],
-      editable: json['editable'],
+      readAt: json['readAt'] != null
+          ? DateTime.parse(json['readAt'])
+          : null,
+      status: json['status'],
     );
   }
 }

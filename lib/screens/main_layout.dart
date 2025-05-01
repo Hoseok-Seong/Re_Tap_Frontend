@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:showcaseview/showcaseview.dart';
 import '../common/constants.dart';
+import '../dto/letter/letter_list_resp.dart';
 import '../provider/letter_provider.dart';
 import 'home_screen.dart';
 import 'letter_list_screen.dart';
@@ -13,8 +14,10 @@ import 'my_page_screen.dart';
 
 class MainLayout extends ConsumerStatefulWidget {
   final int currentIndex;
+  final LetterSummary? letter;
 
-  const MainLayout({super.key, required this.currentIndex});
+  const MainLayout({super.key, required this.currentIndex, this.letter});
+  // const MainLayout({super.key, this.currentIndex = 0, this.letter});
 
   @override
   ConsumerState<MainLayout> createState() => _MainLayoutState();
@@ -27,6 +30,8 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
 
   late BuildContext myShowCaseContext;
 
+  late final List<Widget> _screens;
+
   late int _currentIndex;
 
   @override
@@ -34,6 +39,13 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
     super.initState();
     _currentIndex = widget.currentIndex;
     Future.delayed(Duration.zero, _maybeShowGuide);
+
+    // _screens = [
+    //   HomeScreen(),
+    //   LetterWriteScreen(letter: widget.letter),
+    //   LetterListScreen(),
+    //   MyPageScreen(),
+    // ];
   }
 
   Future<void> _maybeShowGuide() async {
@@ -67,11 +79,12 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
                 statusBarColor: Colors.white,
                 statusBarIconBrightness: Brightness.dark,
               ),
+              automaticallyImplyLeading: false,
               backgroundColor: Colors.white,
               elevation: 0,
               centerTitle: true,
-              title: Row(
-                children: const [
+              title: const Row(
+                children: [
                   Text('📨'),
                   SizedBox(width: 8),
                   Text(
@@ -109,9 +122,10 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
             body: SafeArea(
               child: IndexedStack(
                 index: widget.currentIndex,
-                children: const [
+                // children: _screens,
+                children: [
                   HomeScreen(),
-                  LetterWriteScreen(),
+                  LetterWriteScreen(letter: widget.letter),
                   LetterListScreen(),
                   MyPageScreen(),
                 ],

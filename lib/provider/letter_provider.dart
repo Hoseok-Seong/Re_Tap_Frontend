@@ -1,11 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:future_letter/dto/letter/letter_create_resp.dart';
-import 'package:flutter/material.dart';
 
 import '../api/letter_api.dart';
 import '../common/constants.dart';
 import '../dto/letter/letter_create_req.dart';
+import '../dto/letter/letter_detail_resp.dart';
 import '../dto/letter/letter_list_resp.dart';
 import '../interceptor/auth_interceptor.dart';
 import '../service/letter_service.dart';
@@ -14,8 +14,8 @@ final dioProvider = Provider<Dio>((ref) {
   final dio = Dio(
     BaseOptions(
       baseUrl: AppConstant.baseUrl,
-      connectTimeout: Duration(seconds: 5),
-      receiveTimeout: Duration(seconds: 5),
+      connectTimeout: const Duration(seconds: 50),
+      receiveTimeout: const Duration(seconds: 50),
       contentType: 'application/json',
     ),
   );
@@ -48,3 +48,11 @@ final letterListProvider = FutureProvider.autoDispose<List<LetterSummary>>((ref)
 final letterEditChangedProvider = StateProvider<bool>((ref) => false);
 
 final resetLetterWriteProvider = StateProvider<bool>((ref) => false);
+
+final letterDetailProvider = FutureProvider.family.autoDispose<LetterDetailResp, int>((ref, req) async {
+  final service = ref.read(letterServiceProvider);
+  return await service.getLetterDetail(req);
+});
+
+final isSelectionModeProvider = StateProvider<bool>((ref) => false);
+final selectedLetterIdsProvider = StateProvider<Set<int>>((ref) => {});
