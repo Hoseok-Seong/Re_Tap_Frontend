@@ -81,9 +81,25 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(resp.nickname, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-                  SizedBox(height: 4),
-                  Text(resp.username, style: TextStyle(color: Colors.grey)),
+                  if (resp.nickname != null && resp.nickname!.isNotEmpty)
+                    Text(
+                      resp.nickname!,
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                    ),
+                  if (resp.username != null && resp.username!.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(
+                        resp.username!,
+                        style: const TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                  if ((resp.nickname == null || resp.nickname!.isEmpty) &&
+                      (resp.username == null || resp.username!.isEmpty))
+                    const Text(
+                      '정보 없음',
+                      style: TextStyle(color: Colors.grey),
+                    ),
                 ],
               ),
             ],

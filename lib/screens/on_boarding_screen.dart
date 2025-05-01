@@ -13,7 +13,10 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
-  final PageController _pageController = PageController();
+  final PageController _pageController = PageController(
+    viewportFraction: 1.0,
+  );
+
   int _currentPage = 0;
 
   final List<Map<String, String>> _pages = [
@@ -36,12 +39,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
+        child: Column(
+          children: [
+            Expanded(
+              child: ClipRect(
                 child: PageView.builder(
                   controller: _pageController,
                   itemCount: _pages.length,
@@ -49,33 +50,42 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     setState(() => _currentPage = index);
                   },
                   itemBuilder: (context, index) {
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          _pages[index]['title']!,
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                      child: SizedBox.expand(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              _pages[index]['title']!,
+                              style: const TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              _pages[index]['subtitle']!,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 16),
-                        Text(
-                          _pages[index]['subtitle']!,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
+                      ),
                     );
                   },
                 ),
               ),
-              const SizedBox(height: 24),
-              SmoothPageIndicator(
+            ),
+
+            const SizedBox(height: 24),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: SmoothPageIndicator(
                 controller: _pageController,
                 count: _pages.length,
                 effect: WormEffect(
@@ -85,8 +95,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   dotWidth: 10,
                 ),
               ),
-              const SizedBox(height: 32),
-              SizedBox(
+            ),
+            const SizedBox(height: 32),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: SizedBox(
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
@@ -95,7 +108,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     final prefs = await SharedPreferences.getInstance();
                     await prefs.setBool('isFirstLaunch', false);
                     if (context.mounted) {
-                      context.go('/login'); // 회원가입 페이지로 이동
+                      context.go('/login');
                     }
                   }
                       : null,
@@ -107,8 +120,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: const Text('시작하기'),
                 ),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 24),
+          ],
         ),
       ),
     );

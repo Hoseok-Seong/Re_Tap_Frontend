@@ -178,7 +178,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               : Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('아직 부친 편지가 없어요 🥲'),
+                  const Text('아직 부친 편지가 없어요 📭'),
                   GestureDetector(
                     onTap: () => context.go('/write'),
                     child: const Text(

@@ -3,10 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../common/constants.dart';
+import '../provider/auth_provider.dart';
 import '../provider/user_provider.dart';
+import '../service/auth_service.dart';
 
 class WelcomeScreen extends ConsumerStatefulWidget {
-  const WelcomeScreen({super.key});
+  WelcomeScreen({super.key});
+
+  final authService = AuthService();
 
   @override
   ConsumerState<WelcomeScreen> createState() => _WelcomeScreenState();
@@ -53,6 +57,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> with SingleTicker
 
     try {
       await ref.read(updateNicknameProvider(nickname).future);
+      ref.read(authStateProvider.notifier).state = AuthState.loggedIn;
       context.go('/home');
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

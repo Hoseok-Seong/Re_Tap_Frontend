@@ -2,21 +2,91 @@ import 'package:flutter/material.dart';
 import 'package:future_letter/common/constants.dart';
 import 'package:future_letter/common/privacy.dart';
 import 'package:future_letter/common/terms.dart';
-
+import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../provider/auth_provider.dart';
+import '../provider/user_provider.dart';
 import '../token/token_storage.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SettingsScreen extends StatefulWidget {
+class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
 
   @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
+  ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _showTerms = false;
   bool _showPrivacy = false;
 
-  @override
+  Future<void> _confirmWithdraw() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text(
+          "정말 회원 탈퇴하시겠어요?",
+          style: TextStyle(fontSize: 20),
+        ),
+        content: const Text(
+          "탈퇴 시 모든 편지, 프로필 정보가 완전히 삭제되며 복구가 불가능합니다.\n\n정말 탈퇴하시겠습니까?",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text("취소"),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text("탈퇴하기"),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    // 실제 탈퇴 API 호출
+    final result = await ref.read(withDrawProvider.future);
+    if (mounted) {
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          content: Text(result.message), // "회원 탈퇴가 완료되었습니다."
+          actions: [
+            TextButton(
+              onPressed: () async {
+                // 1. 다이얼로그 먼저 닫기 (뒤에 context.push 등 호출 충돌 방지)
+                Navigator.pop(context);
+
+                // 2. SharedPreferences 값 먼저 저장
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.setBool('hasShownGuide', false);
+                await prefs.setBool('isFirstLaunch', true);
+
+                // 3. 토큰 제거
+                await TokenStorage.clear();
+
+                // 4. 상태 초기화
+                ref.read(authStateProvider.notifier).state = AuthState.loggedOut;
+
+                // 5. 화면 이동 (상태 바뀌었을 경우 자동 리디렉션이 되면 생략도 가능)
+                if (mounted) {
+                  context.go('/');
+                }
+              },
+              child: const Text("확인"),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,7 +96,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(  // 핵심! 스크롤 영역
+            Expanded(
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,10 +126,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
-                        onPressed: () {
-                          TokenStorage.clear();
-                          // ref.read(authStateProvider.notifier).state = AuthState.loggedOut;
-                          // handler.next(err);
+                        onPressed: () async {
+                          await TokenStorage.clear();
+                          ref.read(authStateProvider.notifier).state = AuthState.loggedOut;
+                          context.go('/login');
                         },
                         child: const Text('로그아웃'),
                       ),
@@ -68,9 +138,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: TextButton(
-                        onPressed: () {
-                          // 회원 탈퇴 처리
-                        },
+                        onPressed: _confirmWithdraw,
                         child: const Text(
                           '회원 탈퇴',
                           style: TextStyle(color: Colors.grey, fontSize: 13),
@@ -110,7 +178,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 8),
             child: SizedBox(
-              height: 200, // 또는 MediaQuery.of(context).size.height * 0.3
+              height: 200,
               child: SingleChildScrollView(
                 child: Text(
                   content,

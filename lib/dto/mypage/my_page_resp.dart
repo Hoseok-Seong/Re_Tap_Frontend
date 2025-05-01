@@ -2,7 +2,7 @@ class MyPageResp {
   final int id;
   final String username;
   final String provider;
-  final String nickname;
+  final String? nickname;
   final String role;
   final String? profileImageUrl;
 
@@ -20,7 +20,7 @@ class MyPageResp {
       id: json['id'],
       username: json['username'],
       provider: json['provider'],
-      nickname: json['nickname'],
+      nickname: json['nickname'] as String?,
       role: json['role'],
       profileImageUrl: json['profileImageUrl'] as String?,
     );

@@ -41,7 +41,7 @@ class _LetterListScreenState extends ConsumerState<LetterListScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('아직 작성한 편지가 없어요 😢', style: TextStyle(fontSize: 16)),
+                  const Text('아직 작성한 편지가 없어요', style: TextStyle(fontSize: 16)),
                   const SizedBox(height: 12),
                   TextButton(
                     onPressed: () {

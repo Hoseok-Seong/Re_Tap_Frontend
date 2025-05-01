@@ -65,7 +65,7 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
       ]);
     });
 
-    await prefs.setBool('hasShownGuide', true); // 이후에는 안 보이게
+    //await prefs.setBool('hasShownGuide', true); // 이후에는 안 보이게
   }
 
   @override
@@ -199,8 +199,14 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
                     ),
                     tooltipBackgroundColor: Colors.white,
                     overlayColor: Colors.black.withOpacity(0.7),
-                    targetPadding: const EdgeInsets.all(18),
-                    child: const Icon(Icons.edit),
+                    targetPadding: const EdgeInsets.only(top: 7, bottom: 25, left: 18, right: 18),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Icon(Icons.edit),
+                        SizedBox(height: 4), // label 위치 보정용
+                      ],
+                    ),
                   ),
                   label: '편지 쓰기',
                 ),
@@ -216,7 +222,7 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
                     ),
                     tooltipBackgroundColor: Colors.white,
                     overlayColor: Colors.black.withOpacity(0.7),
-                    targetPadding: const EdgeInsets.all(18),
+                    targetPadding: const EdgeInsets.only(top: 9, bottom: 27, left: 18, right: 18),
                     child: const Icon(Icons.mail),
                   ),
                   label: '편지함',

@@ -25,19 +25,34 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     final access = await TokenStorage.getAccessToken();
     final refresh = await TokenStorage.getRefreshToken();
 
-    if (access != null && refresh != null) {
-      ref.read(authStateProvider.notifier).state = AuthState.loggedIn;
-      context.go('/home');
-    } else if (refresh == null) {
-      // 최초 설치로 간주
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('hasShownGuide', false);
+    final prefs = await SharedPreferences.getInstance();
+    final isFirstLaunch = prefs.getBool('isFirstLaunch') ?? true;
+
+    if (isFirstLaunch) {
       ref.read(authStateProvider.notifier).state = AuthState.loggedOut;
       context.go('/onboarding');
+    } else if (access != null && refresh != null) {
+      ref.read(authStateProvider.notifier).state = AuthState.loggedIn;
+      context.go('/home');
     } else {
       ref.read(authStateProvider.notifier).state = AuthState.loggedOut;
       context.go('/login');
     }
+
+
+    // if (access != null && refresh != null) {
+    //   ref.read(authStateProvider.notifier).state = AuthState.loggedIn;
+    //   context.go('/home');
+    // } else if (refresh == null) {
+    //   // 최초 설치로 간주
+    //   final prefs = await SharedPreferences.getInstance();
+    //   await prefs.setBool('hasShownGuide', false);
+    //   ref.read(authStateProvider.notifier).state = AuthState.loggedOut;
+    //   context.go('/onboarding');
+    // } else {
+    //   ref.read(authStateProvider.notifier).state = AuthState.loggedOut;
+    //   context.go('/login');
+    // }
   }
 
   @override

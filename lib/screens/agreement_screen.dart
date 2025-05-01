@@ -9,7 +9,8 @@ import '../dto/auth/oauth_check_req.dart';
 import '../service/auth_service.dart';
 
 class AgreementScreen extends StatefulWidget {
-  const AgreementScreen({super.key});
+  final OauthCheckReq oauthInfo;
+  const AgreementScreen({super.key, required this.oauthInfo});
 
   @override
   State<AgreementScreen> createState() => _AgreementScreenState();
@@ -50,8 +51,8 @@ class _AgreementScreenState extends State<AgreementScreen> {
       final authService = AuthService();
 
       await authService.registerUser(
-        provider: oauthInfo.provider,
-        accessToken: oauthInfo.accessToken,
+        provider: widget.oauthInfo.provider,
+        accessToken: widget.oauthInfo.accessToken,
       );
 
       context.go('/welcome');
@@ -99,14 +100,6 @@ class _AgreementScreenState extends State<AgreementScreen> {
         const Divider(),
       ],
     );
-  }
-
-  late final OauthCheckReq oauthInfo;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    oauthInfo = GoRouterState.of(context).extra as OauthCheckReq;
   }
 
   @override

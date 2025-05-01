@@ -115,7 +115,7 @@ class LoginScreen extends ConsumerWidget {
     );
 
     if (response.isNewUser) {
-      context.go('/agreement', extra: OauthCheckReq(provider: 'google', accessToken: accessToken));
+      context.go('/agreement', extra: OauthCheckReq(provider: 'kakao', accessToken: accessToken));
     } else {
       await authService.oauthLogin(
         provider: 'kakao',
@@ -141,7 +141,7 @@ class LoginScreen extends ConsumerWidget {
     );
 
     if (response.isNewUser) {
-      context.go('/agreement', extra: OauthCheckReq(provider: 'google', accessToken: accessToken));
+      context.go('/agreement', extra: OauthCheckReq(provider: 'naver', accessToken: accessToken));
     } else {
       await authService.oauthLogin(
         provider: 'naver',

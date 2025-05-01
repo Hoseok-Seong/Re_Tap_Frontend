@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:future_letter/screens/agreement_screen.dart';
 import 'package:future_letter/screens/my_page_screen.dart';
@@ -5,6 +6,7 @@ import 'package:future_letter/screens/notification_screen.dart';
 import 'package:future_letter/screens/welcome_screen.dart';
 import 'package:go_router/go_router.dart';
 
+import '../dto/auth/oauth_check_req.dart';
 import '../dto/letter/letter_list_resp.dart';
 import '../provider/auth_provider.dart';
 import '../screens/main_layout.dart';
@@ -33,8 +35,12 @@ class AppRouter {
       ),
       GoRoute(
         path: '/agreement',
-        name: 'agreement',
-        builder: (context, state) => const AgreementScreen(),
+        pageBuilder: (context, state) {
+          final extra = state.extra as OauthCheckReq;
+          return MaterialPage(
+            child: AgreementScreen(oauthInfo: extra),
+          );
+        },
       ),
       GoRoute(
         path: '/home',
@@ -85,7 +91,7 @@ class AppRouter {
       GoRoute(
         path: '/welcome',
         name: 'welcome',
-        builder: (context, state) => const WelcomeScreen(),
+        builder: (context, state) => WelcomeScreen(),
       ),
       GoRoute(
         path: '/onboarding',
@@ -109,13 +115,19 @@ class AppRouter {
       final container = ProviderScope.containerOf(context, listen: false);
       final authState = container.read(authStateProvider);
 
-      if (authState == AuthState.loggedOut) {
+      final path = state.uri.path;
+      final isPublicPath = path == '/login' || path == '/' || path == '/agreement'
+          || path == '/onboarding' || path == '/welcome';
+
+      if (authState == AuthState.loggedOut && !isPublicPath) {
         return '/login';
       }
-      if (authState == AuthState.loggedIn && state.path == '/login') {
+
+      if (authState == AuthState.loggedIn && path == '/login') {
         return '/home';
       }
+
       return null;
-    },
+    }
   );
 }
