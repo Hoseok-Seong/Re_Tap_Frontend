@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:showcaseview/showcaseview.dart';
 import '../common/constants.dart';
@@ -40,6 +41,9 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
   void initState() {
     super.initState();
     _currentIndex = widget.currentIndex;
+
+    Future.microtask(() => ref.read(homeProvider.future));
+
     Future.delayed(Duration.zero, _maybeShowGuide);
 
     // _screens = [
@@ -70,6 +74,12 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
 
   @override
   Widget build(BuildContext context) {
+    final homeState = ref.watch(homeProvider);
+    final unreadCount = homeState.maybeWhen(
+      data: (data) => data.unreadCount,
+      orElse: () => 0,
+    );
+
     return ShowCaseWidget(
       builder: Builder(
         builder: (showCaseContext) {
@@ -99,26 +109,76 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
                 ],
               ),
               actions: [
-                Showcase(
-                  key: _notificationKey,
-                  description: '새로운 편지가 도착하면 종이 반짝여요!',
-                  descTextStyle: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.black87,
-                    fontWeight: FontWeight.w500,
-                    height: 1.5,
-                  ),
-                  tooltipBackgroundColor: Colors.white,
-                  overlayColor: Colors.black.withOpacity(0.7),
-                  targetPadding: const EdgeInsets.all(2),
-                  showArrow: false,
-                  child: IconButton(
-                    icon: const Icon(Icons.notifications_none, color: Colors.black),
-                    onPressed: () {
-                      context.go('/notification');
+                Padding(
+                  padding: const EdgeInsets.only(right: 12),
+                  child: Consumer(
+                    builder: (context, ref, _) {
+                      final homeState = ref.watch(homeProvider);
+                      final unreadCount = homeState.maybeWhen(
+                        data: (data) => data.unreadCount,
+                        orElse: () => 0,
+                      );
+
+                      return Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          IconButton(
+                            onPressed: () => context.go('/notification'),
+                            icon: unreadCount > 0
+                                ? Lottie.asset(
+                              'assets/lottie/bell.json',
+                              width: 36,
+                              height: 36,
+                              repeat: true,
+                            )
+                                : const Icon(Icons.notifications_none, color: Colors.black),
+                          ),
+                          if (unreadCount > 0)
+                            Positioned(
+                              top: 6,
+                              right: 6,
+                              child: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: const BoxDecoration(
+                                  color: Colors.redAccent,
+                                  shape: BoxShape.circle,
+                                ),
+                                constraints: const BoxConstraints(minWidth: 20, minHeight: 20),
+                                child: Center(
+                                  child: Text(
+                                    unreadCount > 99 ? '99+' : '$unreadCount',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          // Showcase 덮기
+                          Positioned.fill(
+                            child: Showcase(
+                              key: _notificationKey,
+                              description: '새로운 편지가 도착하면 종이 반짝여요!',
+                              descTextStyle: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.black87,
+                                fontWeight: FontWeight.w500,
+                                height: 1.5,
+                              ),
+                              tooltipBackgroundColor: Colors.white,
+                              overlayColor: Colors.black.withOpacity(0.7),
+                              targetPadding: const EdgeInsets.all(2),
+                              showArrow: false,
+                              child: const SizedBox.expand(),
+                            ),
+                          ),
+                        ],
+                      );
                     },
                   ),
-                )
+                ),
               ],
             ),
             body: SafeArea(
@@ -141,6 +201,10 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
               showSelectedLabels: true,
               showUnselectedLabels: true,
               onTap: (index) async {
+
+                // 공통적으로 항상 invalidate
+                ref.invalidate(homeProvider);
+
                 final isChanged = ref.read(letterEditChangedProvider);
 
                 if (widget.currentIndex == 1 && isChanged) {

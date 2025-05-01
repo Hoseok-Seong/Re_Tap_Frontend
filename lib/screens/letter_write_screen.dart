@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:future_letter/common/constants.dart';
+import 'package:future_letter/provider/home_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -122,6 +123,7 @@ class _LetterWriteScreenState extends ConsumerState<LetterWriteScreen> {
 
       _resetState();
       ref.invalidate(letterListProvider);
+      ref.invalidate(homeProvider);
       context.go("/letters");
     } catch (e) {
       _showSnack("부치기 실패: $e");
