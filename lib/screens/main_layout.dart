@@ -76,7 +76,7 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
       ]);
     });
 
-    //await prefs.setBool('hasShownGuide', true); // 이후에는 안 보이게
+    await prefs.setBool('hasShownGuide', true); // 이후에는 안 보이게
   }
 
   @override
@@ -139,7 +139,7 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
                         clipBehavior: Clip.none,
                         children: [
                           IconButton(
-                            onPressed: () => context.go('/notification'),
+                            onPressed: () => context.go('/letters'),
                             icon: showLottie
                                 ? Lottie.asset(
                               'assets/lottie/bell.json',
@@ -176,7 +176,7 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
                           Positioned.fill(
                             child: Showcase(
                               key: _notificationKey,
-                              description: '새로운 편지가 도착하면 종이 반짝여요!',
+                              description: '읽지 않은 편지가 있다면 알림을 줘요!',
                               descTextStyle: const TextStyle(
                                 fontSize: 14,
                                 color: Colors.black87,
