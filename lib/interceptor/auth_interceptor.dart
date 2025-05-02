@@ -9,7 +9,8 @@ class AuthInterceptor extends Interceptor {
   final Ref ref;
   final Dio _dio;
 
-  final authService = AuthService();
+  final AuthService _authService = AuthService();
+  Future<String>? _refreshingToken;
 
   AuthInterceptor(this.ref, this._dio);
 
@@ -29,17 +30,15 @@ class AuthInterceptor extends Interceptor {
     final code = err.response?.data['code'];
 
     if (code == 'J003') {
-      final refresh = await TokenStorage.getRefreshToken();
-      if (refresh == null) return _forceLogout(handler, err);
-
       try {
-        final response = await authService.refreshToken(
-          refreshToken: refresh,
-        );
+        _refreshingToken ??= _authService.refreshTokenAndGetAccessToken(ref);
+        final newAccessToken = await _refreshingToken!;
+        _refreshingToken = null;
 
-        final retryReq = await _retry(err.requestOptions, response.accessToken);
+        final retryReq = await _retry(err.requestOptions, newAccessToken);
         return handler.resolve(retryReq);
       } catch (e) {
+        _refreshingToken = null;
         return _forceLogout(handler, err);
       }
     }

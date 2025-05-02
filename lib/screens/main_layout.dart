@@ -37,6 +37,8 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
 
   late int _currentIndex;
 
+  bool _hasPlayedBellAnimation = false;
+
   @override
   void initState() {
     super.initState();
@@ -52,6 +54,11 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
     //   LetterListScreen(),
     //   MyPageScreen(),
     // ];
+  }
+
+  Future<void> _loadBellAnimationFlag() async {
+    final prefs = await SharedPreferences.getInstance();
+    _hasPlayedBellAnimation = prefs.getBool('hasPlayedBellAnimation') ?? false;
   }
 
   Future<void> _maybeShowGuide() async {
@@ -119,12 +126,21 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
                         orElse: () => 0,
                       );
 
+                      if (!_hasPlayedBellAnimation && unreadCount > 0) {
+                        _hasPlayedBellAnimation = true;
+                        SharedPreferences.getInstance().then((prefs) {
+                          prefs.setBool('hasPlayedBellAnimation', true);
+                        });
+                      }
+
+                      final showLottie = unreadCount > 0 && !_hasPlayedBellAnimation == false;
+
                       return Stack(
                         clipBehavior: Clip.none,
                         children: [
                           IconButton(
                             onPressed: () => context.go('/notification'),
-                            icon: unreadCount > 0
+                            icon: showLottie
                                 ? Lottie.asset(
                               'assets/lottie/bell.json',
                               width: 36,

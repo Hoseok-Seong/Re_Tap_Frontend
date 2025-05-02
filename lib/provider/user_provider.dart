@@ -1,29 +1,12 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:future_letter/dto/user/with_draw_resp.dart';
-import 'package:future_letter/interceptor/auth_interceptor.dart';
 
 import '../api/user_api.dart';
-import '../common/constants.dart';
 import '../service/user_service.dart';
-
-final dioProvider = Provider<Dio>((ref) {
-  final dio = Dio(
-    BaseOptions(
-      baseUrl: AppConstant.baseUrl,
-      connectTimeout: const Duration(seconds: 50),
-      receiveTimeout: const Duration(seconds: 50),
-      contentType: 'application/json',
-    ),
-  );
-
-  dio.interceptors.add(AuthInterceptor(ref, dio));
-  
-  return dio;
-});
+import 'global_dio_provider.dart';
 
 final userApiProvider = Provider<UserApi>((ref) {
-  final dio = ref.read(dioProvider);
+  final dio = ref.read(globalDioProvider);
   return UserApi(dio);
 });
 

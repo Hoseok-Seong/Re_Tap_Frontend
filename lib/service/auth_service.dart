@@ -1,11 +1,12 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:future_letter/api/auth_api.dart';
 import 'package:future_letter/dto/auth/oauth_check_resp.dart';
-import 'package:future_letter/dto/auth/refresh_token_resp.dart';
 import '../dto/auth/oauth_check_req.dart';
 import '../dto/auth/oauth_login_req.dart';
 import '../dto/auth/oauth_login_resp.dart';
 import '../dto/auth/oauth_register_req.dart';
 import '../dto/auth/refresh_token_req.dart';
+import '../provider/auth_provider.dart';
 import '../token/token_storage.dart';
 
 class AuthService {
@@ -55,16 +56,20 @@ class AuthService {
     return response;
   }
 
-  Future<RefreshTokenResp> refreshToken({
-    required String refreshToken,
-  }) async {
-    final request = RefreshTokenReq(
-      refreshToken: refreshToken,
-    );
+  Future<String> refreshTokenAndGetAccessToken(Ref ref) async {
+    final storedRefreshToken = await TokenStorage.getRefreshToken();
 
+    if (storedRefreshToken == null) {
+      TokenStorage.clear();
+      ref.read(authStateProvider.notifier).state = AuthState.loggedOut;
+      return Future.error('Refresh token not found');
+    }
+
+    final request = RefreshTokenReq(refreshToken: storedRefreshToken);
     final response = await _authApi.refreshToken(request);
+
     await TokenStorage.saveTokens(response.accessToken, response.refreshToken);
 
-    return response;
+    return response.accessToken;
   }
 }

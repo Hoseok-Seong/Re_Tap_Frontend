@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:future_letter/dto/letter/letter_create_resp.dart';
 import '../dto/letter/letter_create_req.dart';
+import '../dto/letter/letter_delete_req.dart';
+import '../dto/letter/letter_delete_resp.dart';
 import '../dto/letter/letter_detail_resp.dart';
 import '../dto/letter/letter_list_resp.dart';
 
@@ -24,7 +26,8 @@ class LetterApi {
     return LetterDetailResp.fromJson(response.data);
   }
 
-  Future<void> deleteLetters(List<int> ids) async {
-    await _dio.delete('/api/v1/letters', data: {'letterIds': ids});
+  Future<LetterDeleteResp> deleteLetters(List<int> ids) async {
+    final response = await _dio.post('/api/v1/letters/delete', data: LetterDeleteReq(letterIds: ids).toJson());
+    return LetterDeleteResp.fromJson(response.data);
   }
 }
