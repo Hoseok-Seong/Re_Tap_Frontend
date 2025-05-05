@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:showcaseview/showcaseview.dart';
 import '../common/constants.dart';
 import '../dto/goal/goal_list_resp.dart';
+import '../notification/notification_service.dart';
 import '../provider/goal_provider.dart';
 import '../provider/home_provider.dart';
 import '../provider/my_page_provider.dart';
@@ -44,6 +45,8 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
     Future.microtask(() => ref.read(homeProvider.future));
 
     Future.delayed(Duration.zero, _maybeShowGuide);
+
+    requestNotificationPermission();
   }
 
   Future<void> _loadBellAnimationFlag() async {

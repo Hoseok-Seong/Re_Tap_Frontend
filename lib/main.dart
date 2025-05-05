@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'notification/notification_service.dart';
 import 'routes/app_router.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -14,6 +15,7 @@ void main() async{
     nativeAppKey: dotenv.env['kakao_nativeAppKey'],
   );
   //debugPaintSizeEnabled = true;
+
   runApp(ProviderScope(child: ReTapApp()));
 }
 
