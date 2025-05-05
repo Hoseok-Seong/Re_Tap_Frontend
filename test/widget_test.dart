@@ -7,21 +7,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-<<<<<<< HEAD
 import 'package:re_tap/main.dart';
-=======
-import 'package:future_letter/main.dart';
->>>>>>> 8eceefcd148f0a362e2e75fb877a6b75c814bc37
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-<<<<<<< HEAD
     await tester.pumpWidget(const ReTapApp());
-=======
-    await tester.pumpWidget(const FutureLetterApp());
->>>>>>> 8eceefcd148f0a362e2e75fb877a6b75c814bc37
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);
