@@ -21,12 +21,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   final List<Map<String, String>> _pages = [
     {
-      'title': '목표를 세우고\n목표함에 저장하세요',
-      'subtitle': '정해둔 날에 다시 꺼내볼 수 있어요',
+      'title': '목표를 세우고\n리스트를 만들어보세요',
+      'subtitle': '단기목표, 장기목표 어떤 것이든 괜찮아요',
     },
     {
-      'title': '목표는\n나만 확인할 수 있어요',
-      'subtitle': '도착일 전까지 잠겨 있어요',
+      'title': '지정한 일자에 알람이 가고\n목표를 확인할 수 있어요',
+      'subtitle': '달성도를 평가하고 피드백을 작성해요',
     },
     {
       'title': '이제, 목표를\n하나 만들어볼까요?',

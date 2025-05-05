@@ -174,7 +174,6 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
                               ),
                               tooltipBackgroundColor: Colors.white,
                               overlayColor: Colors.black.withOpacity(0.7),
-                              targetPadding: const EdgeInsets.all(1),
                               showArrow: false,
                               child: const SizedBox.expand(),
                             ),

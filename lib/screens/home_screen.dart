@@ -111,8 +111,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             alignment: Alignment.centerLeft,
             child: Text(
               quote.krContent,
-              style: const TextStyle(fontSize: 16),
-              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 15),
+              textAlign: TextAlign.left,
             ),
           ),
           const SizedBox(height: 4),
@@ -120,7 +120,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             alignment: Alignment.centerLeft,
             child: Text(
               '- ${quote.author}',
-              style: const TextStyle(color: Colors.grey),
+              style: const TextStyle(color: Colors.grey, fontSize: 15),
             ),
           ),
         ],

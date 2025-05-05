@@ -48,7 +48,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       body: Center(
         child: Text(
           'ReTap',
-          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(fontSize: 34, fontWeight: FontWeight.bold, color: Colors.white),
         ),
       ),
     );
