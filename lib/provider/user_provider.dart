@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../api/user_api.dart';
 import '../dto/user/with_draw_resp.dart';
 import '../service/user_service.dart';

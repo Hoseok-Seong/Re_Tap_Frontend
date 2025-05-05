@@ -209,4 +209,3 @@ class _SocialLoginButton extends StatelessWidget {
     );
   }
 }
-
