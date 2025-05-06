@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../common/global_navigator.dart';
 import '../dto/auth/oauth_check_req.dart';
 import '../dto/goal/goal_list_resp.dart';
 import '../layout/main_layout.dart';
@@ -15,6 +16,7 @@ import '../screens/welcome_screen.dart';
 
 class AppRouter {
   static final router = GoRouter(
+      navigatorKey: navigatorKey,
       initialLocation: '/',
       routes: [
         GoRoute(

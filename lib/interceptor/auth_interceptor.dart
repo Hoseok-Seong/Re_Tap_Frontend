@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../common/global_navigator.dart';
 import '../provider/auth_provider.dart';
 import '../service/auth_service.dart';
 import '../token/token_storage.dart';
@@ -65,6 +66,9 @@ class AuthInterceptor extends Interceptor {
   void _forceLogout(ErrorInterceptorHandler handler, DioException err) {
     TokenStorage.clear();
     ref.read(authStateProvider.notifier).state = AuthState.loggedOut;
+
+    navigatorKey.currentState?.pushNamedAndRemoveUntil('/login', (route) => false);
+
     handler.next(err);
   }
 }

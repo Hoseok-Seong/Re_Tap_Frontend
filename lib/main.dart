@@ -1,3 +1,5 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -15,6 +17,17 @@ void main() async{
     nativeAppKey: dotenv.env['kakao_nativeAppKey'],
   );
   //debugPaintSizeEnabled = true;
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
+  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+
+  await initializeLocalNotification();
+  listenForegroundMessages();
 
   runApp(ProviderScope(child: ReTapApp()));
 }

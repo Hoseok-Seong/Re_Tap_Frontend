@@ -1,4 +1,6 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -6,7 +8,9 @@ import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
 import '../common/constants.dart';
 import '../dto/auth/oauth_check_req.dart';
+import '../dto/user/fcm_token_req.dart';
 import '../provider/auth_provider.dart';
+import '../provider/user_provider.dart';
 import '../service/auth_service.dart';
 
 class LoginScreen extends ConsumerWidget {
@@ -65,8 +69,25 @@ class LoginScreen extends ConsumerWidget {
     );
   }
 
+  Future<void> registerFcmToken(WidgetRef ref) async {
+    final token = await FirebaseMessaging.instance.getToken();
+
+    if (token != null) {
+      final req = FcmTokenReq(fcmToken: token);
+
+      try {
+        await ref.read(updateFcmTokenProvider(req).future);
+        print('✅ FCM 토큰 서버에 전송 완료');
+      } catch (e) {
+        print('❌ FCM 토큰 전송 실패: $e');
+      }
+    }
+  }
+
   Future<void> _loginWithGoogle(BuildContext context, WidgetRef ref) async {
-    final GoogleSignIn googleSignIn = GoogleSignIn();
+    final clientId = dotenv.env['google_oauth_client_id'];
+
+    final GoogleSignIn googleSignIn = GoogleSignIn(clientId: clientId);
     final googleUser = await googleSignIn.signIn();
 
     if (googleUser == null) {
@@ -94,6 +115,9 @@ class LoginScreen extends ConsumerWidget {
         accessToken: accessToken,
       );
       ref.read(authStateProvider.notifier).state = AuthState.loggedIn;
+
+      registerFcmToken(ref);
+
       context.go('/home');
     }
   }
@@ -123,6 +147,9 @@ class LoginScreen extends ConsumerWidget {
         accessToken: accessToken,
       );
       ref.read(authStateProvider.notifier).state = AuthState.loggedIn;
+
+      registerFcmToken(ref);
+
       context.go('/home');
     }
   }
@@ -149,6 +176,9 @@ class LoginScreen extends ConsumerWidget {
         accessToken: accessToken,
       );
       ref.read(authStateProvider.notifier).state = AuthState.loggedIn;
+
+      registerFcmToken(ref);
+
       context.go('/home');
     }
   }

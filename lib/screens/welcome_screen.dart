@@ -1,8 +1,10 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../common/constants.dart';
+import '../dto/user/fcm_token_req.dart';
 import '../provider/auth_provider.dart';
 import '../provider/user_provider.dart';
 import '../service/auth_service.dart';
@@ -57,12 +59,29 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> with SingleTicker
 
     try {
       await ref.read(updateNicknameProvider(nickname).future);
+      await registerFcmToken(ref);
+
       ref.read(authStateProvider.notifier).state = AuthState.loggedIn;
       context.go('/home');
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('닉네임 저장에 실패했어요: $e')),
       );
+    }
+  }
+
+  Future<void> registerFcmToken(WidgetRef ref) async {
+    final token = await FirebaseMessaging.instance.getToken();
+
+    if (token != null) {
+      final req = FcmTokenReq(fcmToken: token);
+
+      try {
+        await ref.read(updateFcmTokenProvider(req).future);
+        print('✅ FCM 토큰 서버에 전송 완료');
+      } catch (e) {
+        print('❌ FCM 토큰 전송 실패: $e');
+      }
     }
   }
 
