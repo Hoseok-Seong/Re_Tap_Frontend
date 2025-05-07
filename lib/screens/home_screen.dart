@@ -219,7 +219,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           const Text('알림 예정 목표', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           count == 0
-              ? const Text('아직 도착한 목표가 없어요')
+              ? const Text('알림 예정인 목표가 없어요')
               : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: upcomingGoals
