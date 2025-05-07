@@ -85,9 +85,7 @@ class LoginScreen extends ConsumerWidget {
   }
 
   Future<void> _loginWithGoogle(BuildContext context, WidgetRef ref) async {
-    final clientId = dotenv.env['google_oauth_client_id'];
-
-    final GoogleSignIn googleSignIn = GoogleSignIn(clientId: clientId);
+    final GoogleSignIn googleSignIn = GoogleSignIn();
     final googleUser = await googleSignIn.signIn();
 
     if (googleUser == null) {
