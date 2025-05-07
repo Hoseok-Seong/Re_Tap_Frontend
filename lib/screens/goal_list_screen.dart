@@ -98,7 +98,7 @@ class _GoalListScreenState extends ConsumerState<GoalListScreen> {
                       case 'SCHEDULED':
                         final isFutureArrival = goal.arrivalDate != null &&
                             goal.arrivalDate!.isAfter(DateTime.now());
-                        icon = isFutureArrival ? Icons.lock : Icons.lock_open;
+                        icon = Icons.schedule;
                         iconColor = isFutureArrival ? Colors.grey : AppColors.primary;
                         statusText = isFutureArrival ? '(예약발송)' : '(도착완료)';
                         break;
@@ -106,11 +106,6 @@ class _GoalListScreenState extends ConsumerState<GoalListScreen> {
                         icon = Icons.mark_email_unread;
                         iconColor = AppColors.primary;
                         statusText = '(도착완료)';
-                        break;
-                      case 'READ':
-                        icon = Icons.mark_email_read;
-                        iconColor = AppColors.primary;
-                        statusText = '(읽은목표)';
                         break;
                       default:
                         icon = Icons.mail_outline;
@@ -145,15 +140,16 @@ class _GoalListScreenState extends ConsumerState<GoalListScreen> {
                         final isScheduled = goal.status == 'SCHEDULED';
                         final isFutureArrival = goal.arrivalDate != null &&
                             goal.arrivalDate!.isAfter(DateTime.now());
+                        final isLocked = goal.isLocked;
 
                         if (isDraft) {
                           context.push('/write', extra: goal);
-                        } else if (isScheduled && isFutureArrival) {
+                        } else if (isScheduled && isFutureArrival && isLocked) {
                           showDialog(
                             context: context,
                             builder: (_) => AlertDialog(
                               title: const Text('아직 열 수 없어요'),
-                              content: const Text('설정한 도착일 이후에 열람할 수 있습니다.'),
+                              content: const Text('설정한 알림일자 이후에 열람할 수 있습니다.'),
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(context),
@@ -220,7 +216,7 @@ class _GoalListScreenState extends ConsumerState<GoalListScreen> {
                                   if (goal.arrivalDate != null) ...[
                                     const SizedBox(height: 2),
                                     Text(
-                                      '도착일자: $arrivalStr',
+                                      '알림일자: $arrivalStr',
                                       style: const TextStyle(fontSize: 12, color: Colors.grey),
                                     ),
                                   ],

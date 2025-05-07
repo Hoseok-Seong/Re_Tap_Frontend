@@ -114,7 +114,7 @@ class _GoalWriteScreenState extends ConsumerState<GoalWriteScreen> {
       title: _titleController.text,
       content: _contentController.text,
       isLocked: _isLocked,
-      arrivalDate: _isLocked ? _selectedDate : null,
+      arrivalDate: _selectedDate,
       isSend: true,
     );
 
@@ -156,7 +156,7 @@ class _GoalWriteScreenState extends ConsumerState<GoalWriteScreen> {
   Widget _buildFormBody() {
     final dateStr = _selectedDate != null
         ? DateFormat('yyyy-MM-dd').format(_selectedDate!)
-        : "도착 날짜 선택";
+        : "알림일자 선택";
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
@@ -164,7 +164,7 @@ class _GoalWriteScreenState extends ConsumerState<GoalWriteScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            '지금의 목표, 미래를 바꿀 수 있어요',
+            '오늘의 목표, 미래를 바꿀 수 있어요',
             style: TextStyle(fontSize: 14, color: Colors.grey),
           ),
           const SizedBox(height: 24),
@@ -236,7 +236,6 @@ class _GoalWriteScreenState extends ConsumerState<GoalWriteScreen> {
                   onChanged: (value) {
                     setState(() {
                       _isLocked = value;
-                      if (!value) _selectedDate = null;
                     });
                     ref.read(goalEditChangedProvider.notifier).state = true;
                   },
@@ -244,14 +243,13 @@ class _GoalWriteScreenState extends ConsumerState<GoalWriteScreen> {
                     '잠금 목표로 작성할까요? 🔒',
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
-                  subtitle: const Text('도착일까지 내용을 볼 수 없어요.', style: TextStyle(fontSize: 12)),
+                  subtitle: const Text('알림일자까지 내용을 볼 수 없어요.', style: TextStyle(fontSize: 12)),
                 ),
-                if (_isLocked)
-                  ListTile(
-                    title: Text(dateStr),
-                    trailing: const Icon(Icons.calendar_today),
-                    onTap: _pickDate,
-                  ),
+                ListTile(
+                  title: Text(dateStr),
+                  trailing: const Icon(Icons.calendar_today),
+                  onTap: _pickDate,
+                ),
               ],
             ),
           ),
@@ -348,7 +346,7 @@ class _GoalWriteScreenState extends ConsumerState<GoalWriteScreen> {
     }
 
     if (_isLocked && _selectedDate == null) {
-      _showSnack("잠금 목표의 경우 도착 날짜를 선택해주세요");
+      _showSnack("잠금 목표의 경우 알림일자를 선택해주세요");
       return false;
     }
 

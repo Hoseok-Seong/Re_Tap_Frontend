@@ -87,7 +87,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  '1. 이루고 싶은 목표를 작성해요\n2. 잠금일자를 설정하고 계획을 실천해요\n3. 도착한 목표를 열람해요\n4. 달성도를 평가하고 피드백을 작성해요',
+                  '1. 이루고 싶은 목표를 작성해요\n2. 알림일자를 설정하고 계획을 실천해요\n3. 도착한 목표를 열람해요\n4. 달성도를 평가하고 피드백을 작성해요',
                   style: TextStyle(color: Colors.grey, fontSize: 14),
                 ),
                 const SizedBox(height: 12),
@@ -216,7 +216,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('도착 예정 목표', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const Text('알림 예정 목표', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           count == 0
               ? const Text('아직 도착한 목표가 없어요')
@@ -233,7 +233,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     Expanded(
                       child: Row(
                         children: [
-                          const Icon(Icons.lock, color: AppColors.primary, size: 18),
+                          const Icon(Icons.schedule, color: AppColors.primary, size: 18),
                           const SizedBox(width: 6),
                           Expanded(
                             child: Text(
@@ -245,7 +245,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                     ),
                     Text(
-                      '도착일: ${_formatFullDate(goal.arrivalDate)}',
+                      '알림일: ${_formatFullDate(goal.arrivalDate)}',
                       style: const TextStyle(color: Colors.grey, fontSize: 13),
                     ),
                   ],

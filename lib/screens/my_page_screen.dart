@@ -285,7 +285,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
             secondChild: const Padding(
               padding: EdgeInsets.only(top: 12),
               child: Text(
-                'ReTap은 당신의 목표를 작성하는 앱입니다.\n\n일반적인 목표 관리 앱과 다르게, 설정한 목표의 내용을 열람하지 못한다는 컨셉을 가지고 있어요.\n\n제목은 알아볼 수 있게, 내용은 최대한 구체적으로 작성해주세요.\n\n설정한 일자에 나의 목표를 알림으로 받을 수 있어요.\n\n내가 얼마나 목표를 잘 달성했는지, 달성도를 평가하고 스스로에게 피드백을 줄 수 있어요.',
+                'ReTap은 당신의 목표를 작성하는 앱입니다.\n\n제목은 간결하게, 내용은 최대한 구체적으로 작성해주세요.\n\n설정한 알림일자에 나의 목표를 알림으로 받을 수 있어요.\n\n내가 얼마나 목표를 잘 달성했는지, 달성도를 평가하고 스스로에게 피드백을 줄 수 있어요.',
                 style: TextStyle(color: Colors.grey),
               ),
             ),
