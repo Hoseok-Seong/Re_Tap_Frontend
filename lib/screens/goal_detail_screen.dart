@@ -288,7 +288,7 @@ class _GoalDetailScreenState extends ConsumerState<GoalDetailScreen> {
                 return const SizedBox.shrink();
               }
             }
-            return Center(child: Text('에러 발생: $error'));
+            return Center(child: Text('목표 데이터를 받아오지 못했습니다. 다시 시도해주세요.'));
           },
           data: (goal) {
             final isDraft = goal.status == 'DRAFT';
@@ -457,7 +457,7 @@ class _GoalDetailScreenState extends ConsumerState<GoalDetailScreen> {
                                     );
                                   } catch (e) {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('피드백 저장에 실패했어요: $e')),
+                                      SnackBar(content: Text('피드백 저장에 실패했어요. 다시 시도해주세요.')),
                                     );
                                   }
                                 },

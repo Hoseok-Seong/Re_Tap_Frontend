@@ -188,78 +188,138 @@ class _GoalListScreenState extends ConsumerState<GoalListScreen> {
                           );
                         }
                       },
-                      child: Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
-                            )
-                          ],
-                        ),
-                        child: Row(
+                      child: Stack(
                           children: [
-                            if (_isSelectMode)
-                              Checkbox(
-                                value: _selectedGoalIds.contains(goal.goalId),
-                                onChanged: (checked) {
-                                  setState(() {
-                                    if (checked == true) {
-                                      _selectedGoalIds.add(goal.goalId);
-                                    } else {
-                                      _selectedGoalIds.remove(goal.goalId);
-                                    }
-
-                                    if (_selectedGoalIds.isEmpty) {
-                                      _isSelectMode = false;
-                                    }
-                                  });
-                                },
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 2),
+                                  )
+                                ],
                               ),
-                            Icon(icon, color: iconColor),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              child: Row(
                                 children: [
-                                  Text(
-                                    goal.title,
-                                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    '작성일자: $createdStr',
-                                    style: const TextStyle(fontSize: 12, color: Colors.grey),
-                                  ),
-                                  if (goal.arrivalDate != null) ...[
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      '알림일자: $arrivalStr',
-                                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                                  if (_isSelectMode)
+                                    Checkbox(
+                                      value: _selectedGoalIds.contains(goal.goalId),
+                                      onChanged: (checked) {
+                                        setState(() {
+                                          if (checked == true) {
+                                            _selectedGoalIds.add(goal.goalId);
+                                          } else {
+                                            _selectedGoalIds.remove(goal.goalId);
+                                          }
+
+                                          if (_selectedGoalIds.isEmpty) {
+                                            _isSelectMode = false;
+                                          }
+                                        });
+                                      },
                                     ),
-                                  ],
+                                  Icon(icon, color: iconColor),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          goal.title,
+                                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          '작성일자: $createdStr',
+                                          style: const TextStyle(fontSize: 12, color: Colors.grey),
+                                        ),
+                                        if (goal.arrivalDate != null) ...[
+                                          const SizedBox(height: 2),
+                                          Text(
+                                            '알림일자: $arrivalStr',
+                                            style: const TextStyle(fontSize: 12, color: Colors.grey),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(statusText, style: TextStyle(fontSize: 12, color: iconColor)),
+                                      const SizedBox(height: 2),
+                                      Text(goal.isLocked ? '잠금목표 🔒' : '일반목표',
+                                          style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                                      const SizedBox(height: 2),
+                                      Text(goal.isRead ? '읽음' : ' ', style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                                    ],
+                                  ),
                                 ],
                               ),
                             ),
-                            const SizedBox(width: 8),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(statusText, style: TextStyle(fontSize: 12, color: iconColor)),
-                                const SizedBox(height: 2),
-                                Text(goal.isLocked ? '잠금목표 🔒' : '일반목표',
-                                    style: const TextStyle(fontSize: 11, color: Colors.grey)),
-                                const SizedBox(height: 2),
-                                Text(goal.isRead ? '읽음' : ' ', style: const TextStyle(fontSize: 11, color: Colors.grey)),
-                              ],
-                            ),
-                          ],
-                        ),
+                            Positioned(
+                              bottom: 8,
+                              right: 8,
+                              child: PopupMenuButton<String>(
+                                onSelected: (value) async {
+                                  if (value == 'edit') {
+                                    context.push('/write', extra: goal);
+                                  } else if (value == 'delete') {
+                                    final confirm = await showDialog<bool>(
+                                      context: context,
+                                      builder: (_) => AlertDialog(
+                                        title: const Text('삭제 확인'),
+                                        content: const Text('이 목표를 삭제할까요?'),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () => Navigator.pop(context, false),
+                                            child: const Text('취소'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () => Navigator.pop(context, true),
+                                            child: const Text('삭제', style: TextStyle(color: Colors.red)),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+
+                                    if (confirm == true) {
+                                      try {
+                                        await ref.read(goalDeleteProvider([goal.goalId]).future);
+                                        ref.invalidate(goalListProvider);
+                                        ref.invalidate(homeProvider);
+
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(content: Text('목표가 삭제되었습니다.')),
+                                        );
+                                      } catch (e) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text('삭제가 실패하였습니다. 다시 시도해주세요.')),
+                                        );
+                                      }
+                                    }
+                                  }
+                                },
+                                itemBuilder: (context) => [
+                                  const PopupMenuItem(
+                                    value: 'edit',
+                                    child: Text('수정', style: TextStyle(color: Colors.deepOrange)),
+                                  ),
+                                  const PopupMenuItem(
+                                    value: 'delete',
+                                    child: Text('삭제', style: TextStyle(color: Colors.red)),
+                                  ),
+                                ],
+                                icon: const Icon(Icons.more_horiz, size: 20),
+                              ),
+                            )
+                          ]
                       ),
                     );
                   },
@@ -325,7 +385,7 @@ class _GoalListScreenState extends ConsumerState<GoalListScreen> {
                                 );
                               } catch (e) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('삭제 실패: $e')),
+                                  SnackBar(content: Text('삭제가 실패하였습니다. 다시 시도해주세요.')),
                                 );
                               }
                             },

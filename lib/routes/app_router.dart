@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../common/global_navigator.dart';
 import '../dto/auth/oauth_check_req.dart';
 import '../dto/goal/goal_list_resp.dart';
+import '../layout/RootWithWillPopScope.dart';
 import '../layout/main_layout.dart';
 import '../provider/auth_provider.dart';
 import '../screens/agreement_screen.dart';
@@ -25,6 +26,11 @@ class AppRouter {
           builder: (context, state) => const SplashScreen(),
         ),
         GoRoute(
+          path: '/onboarding',
+          name: 'onboarding',
+          builder: (context, state) => const OnboardingScreen(),
+        ),
+        GoRoute(
           path: '/login',
           name: 'login',
           builder: (context, state) => LoginScreen(),
@@ -35,6 +41,23 @@ class AppRouter {
             final extra = state.extra as OauthCheckReq;
             return MaterialPage(
               child: AgreementScreen(oauthInfo: extra),
+            );
+          },
+        ),
+        GoRoute(
+          path: '/welcome',
+          name: 'welcome',
+          builder: (context, state) => WelcomeScreen(),
+        ),
+        GoRoute(
+          path: '/main',
+          name: 'main',
+          pageBuilder: (context, state) {
+            final tabParam = state.uri.queryParameters['tab'];
+            final tabIndex = int.tryParse(tabParam ?? '0') ?? 0;
+
+            return NoTransitionPage(
+              child: MainLayout(currentIndex: tabIndex, goal: state.extra as GoalSummary?),
             );
           },
         ),
@@ -78,28 +101,6 @@ class AppRouter {
           path: '/settings',
           name: 'settings',
           builder: (context, state) => const SettingsScreen(),
-        ),
-        GoRoute(
-          path: '/welcome',
-          name: 'welcome',
-          builder: (context, state) => WelcomeScreen(),
-        ),
-        GoRoute(
-          path: '/onboarding',
-          name: 'onboarding',
-          builder: (context, state) => const OnboardingScreen(),
-        ),
-        GoRoute(
-          path: '/main',
-          name: 'main',
-          pageBuilder: (context, state) {
-            final tabParam = state.uri.queryParameters['tab'];
-            final tabIndex = int.tryParse(tabParam ?? '0') ?? 0;
-
-            return NoTransitionPage(
-              child: MainLayout(currentIndex: tabIndex, goal: state.extra as GoalSummary?),
-            );
-          },
         ),
       ],
       redirect: (context, state) {

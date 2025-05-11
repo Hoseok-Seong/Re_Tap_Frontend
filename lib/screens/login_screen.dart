@@ -1,8 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
@@ -23,20 +21,7 @@ class LoginScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return WillPopScope(
-      onWillPop: () async {
-        final now = DateTime.now();
-
-        if (_lastBackPressTime == null ||
-            now.difference(_lastBackPressTime!) > const Duration(seconds: 2)) {
-          _lastBackPressTime = now;
-          Fluttertoast.showToast(msg: '한 번 더 누르면 종료됩니다');
-          return false;
-        }
-
-        return true; // 앱 종료
-      },
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: AppColors.primary,
         body: Padding(
           padding: const EdgeInsets.all(32),
@@ -57,7 +42,7 @@ class LoginScreen extends ConsumerWidget {
               _SocialLoginButton(
                 iconPath: 'assets/icons/google_icon2.png',
                 text: '구글로 로그인',
-                backgroundColor: Colors.white70,
+                backgroundColor: Color(0xFFF1F3F4),
                 textColor: Colors.black,
                 onTap: () => _loginWithGoogle(context, ref),
                 borderColor: Colors.grey.shade300,
@@ -82,8 +67,7 @@ class LoginScreen extends ConsumerWidget {
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 
   Future<void> registerFcmToken(WidgetRef ref) async {
@@ -94,9 +78,9 @@ class LoginScreen extends ConsumerWidget {
 
       try {
         await ref.read(updateFcmTokenProvider(req).future);
-        print('✅ FCM 토큰 서버에 전송 완료');
+        print('FCM 토큰 서버에 전송 완료');
       } catch (e) {
-        print('❌ FCM 토큰 전송 실패: $e');
+        print('FCM 토큰 전송 실패: $e');
       }
     }
   }

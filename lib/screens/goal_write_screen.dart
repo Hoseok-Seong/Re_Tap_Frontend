@@ -127,7 +127,7 @@ class _GoalWriteScreenState extends ConsumerState<GoalWriteScreen> {
       ref.invalidate(homeProvider);
       context.go("/goals");
     } catch (e) {
-      _showSnack("저장 실패: $e");
+      _showSnack("저장이 실패하였습니다. 다시 시도해주세요.");
     }
   }
 

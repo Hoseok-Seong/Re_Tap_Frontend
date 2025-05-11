@@ -58,7 +58,7 @@ class _AgreementScreenState extends State<AgreementScreen> {
       context.go('/welcome');
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('회원가입 중 오류 발생: $e')),
+        SnackBar(content: Text('회원가입 중 오류가 발생하였습니다.')),
       );
     }
   }
