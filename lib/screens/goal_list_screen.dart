@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -143,7 +144,7 @@ class _GoalListScreenState extends ConsumerState<GoalListScreen> {
                           _selectedGoalIds.add(goal.goalId);
                         });
                       },
-                      onTap: () {
+                      onTap: () async {
                         if (_isSelectMode) {
                           setState(() {
                             if (_selectedGoalIds.contains(goal.goalId)) {
@@ -168,6 +169,7 @@ class _GoalListScreenState extends ConsumerState<GoalListScreen> {
                         if (isDraft) {
                           context.push('/write', extra: goal);
                         } else if (isScheduled && isFutureArrival && isLocked) {
+                          await Future.delayed(Duration.zero);
                           showDialog(
                             context: context,
                             builder: (_) => AlertDialog(
@@ -191,7 +193,7 @@ class _GoalListScreenState extends ConsumerState<GoalListScreen> {
                       child: Stack(
                           children: [
                             Container(
-                              padding: const EdgeInsets.all(16),
+                              padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(12),
@@ -204,6 +206,7 @@ class _GoalListScreenState extends ConsumerState<GoalListScreen> {
                                 ],
                               ),
                               child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   if (_isSelectMode)
                                     Checkbox(
@@ -227,6 +230,7 @@ class _GoalListScreenState extends ConsumerState<GoalListScreen> {
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
                                           goal.title,
@@ -245,12 +249,35 @@ class _GoalListScreenState extends ConsumerState<GoalListScreen> {
                                             style: const TextStyle(fontSize: 12, color: Colors.grey),
                                           ),
                                         ],
+                                        const SizedBox(height: 12),
+
+                                        if (goal.score != null)
+                                          Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const Text(
+                                                '피드백 점수:',
+                                                style: TextStyle(fontSize: 12, color: Colors.grey),
+                                              ),
+                                              const SizedBox(width: 4),
+                                              RatingBarIndicator(
+                                                rating: goal.score!.toDouble(),
+                                                itemCount: 5,
+                                                itemSize: 16,
+                                                itemBuilder: (context, _) =>
+                                                const Icon(Icons.star, color: Colors.amber),
+                                              ),
+                                            ],
+                                          ),
+                                        if (goal.score == null)
+                                          const Text('성장 피드백이 아직 없어요 🌱', style: TextStyle(fontSize: 12, color: Colors.grey)),
                                       ],
                                     ),
                                   ),
                                   const SizedBox(width: 8),
                                   Column(
                                     crossAxisAlignment: CrossAxisAlignment.end,
+                                    mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       Text(statusText, style: TextStyle(fontSize: 12, color: iconColor)),
                                       const SizedBox(height: 2),
@@ -264,8 +291,8 @@ class _GoalListScreenState extends ConsumerState<GoalListScreen> {
                               ),
                             ),
                             Positioned(
-                              bottom: 8,
-                              right: 8,
+                              bottom: 0,
+                              right: 0,
                               child: PopupMenuButton<String>(
                                 onSelected: (value) async {
                                   if (value == 'edit') {
@@ -306,17 +333,30 @@ class _GoalListScreenState extends ConsumerState<GoalListScreen> {
                                     }
                                   }
                                 },
-                                itemBuilder: (context) => [
-                                  const PopupMenuItem(
-                                    value: 'edit',
-                                    child: Text('수정', style: TextStyle(color: Colors.deepOrange)),
-                                  ),
-                                  const PopupMenuItem(
-                                    value: 'delete',
-                                    child: Text('삭제', style: TextStyle(color: Colors.red)),
-                                  ),
-                                ],
-                                icon: const Icon(Icons.more_horiz, size: 20),
+                                itemBuilder: (context) {
+                                  final items = <PopupMenuEntry<String>>[];
+
+                                  // 수정 버튼: 잠금 상태 아니고, score 없을 때만
+                                  if (!goal.isLocked && goal.score == null) {
+                                    items.add(
+                                      const PopupMenuItem(
+                                        value: 'edit',
+                                        child: Text('수정', style: TextStyle(color: Colors.orange)),
+                                      ),
+                                    );
+                                  }
+
+                                  // 삭제 버튼은 항상 보임
+                                  items.add(
+                                    const PopupMenuItem(
+                                      value: 'delete',
+                                      child: Text('삭제', style: TextStyle(color: Colors.red)),
+                                    ),
+                                  );
+
+                                  return items;
+                                },
+                                icon: const Icon(Icons.more_horiz, size: 20, color: Colors.grey),
                               ),
                             )
                           ]

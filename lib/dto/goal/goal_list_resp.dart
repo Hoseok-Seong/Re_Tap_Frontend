@@ -22,6 +22,7 @@ class GoalSummary {
   final bool isRead;
   final DateTime createdDate;
   final String status;
+  final int? score;
 
   GoalSummary({
     required this.goalId,
@@ -33,6 +34,7 @@ class GoalSummary {
     required this.isRead,
     required this.createdDate,
     required this.status,
+    required this.score,
   });
 
   factory GoalSummary.fromJson(Map<String, dynamic> json) {
@@ -48,6 +50,7 @@ class GoalSummary {
       isRead: json['isRead'],
       createdDate: DateTime.parse(json['createdDate']),
       status: json['status'],
+      score: json['score'],
     );
   }
 }
