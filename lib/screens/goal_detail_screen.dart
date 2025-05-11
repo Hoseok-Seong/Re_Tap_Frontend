@@ -117,7 +117,7 @@ class _GoalDetailScreenState extends ConsumerState<GoalDetailScreen> {
                 ),
 
                 // 피드백 입력 영역
-                if (!isDraft)
+                if (!goal.isLocked && goal.score == null && (goal.arrivalDate == null || goal.arrivalDate!.isBefore(DateTime.now())))
                   SafeArea(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
