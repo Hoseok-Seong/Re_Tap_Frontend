@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -64,8 +65,17 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> with SingleTicker
       ref.read(authStateProvider.notifier).state = AuthState.loggedIn;
       context.go('/home');
     } catch (e) {
+      String errorMessage = '닉네임 저장에 실패했어요';
+
+      if (e is DioException) {
+        final code = e.response?.data['code'];
+        if (code == 'U005') {
+          errorMessage = '이미 사용 중인 닉네임이에요';
+        }
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('닉네임 저장에 실패했어요: $e')),
+        SnackBar(content: Text(errorMessage)),
       );
     }
   }

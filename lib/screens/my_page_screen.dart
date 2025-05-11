@@ -187,7 +187,25 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
         ),
       ),
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => Center(child: Text('에러 발생: $err')),
+      error: (err, stack) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('마이페이지 데이터를 불러오지 못했어요')),
+          );
+        });
+
+        return SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildProfileCard(context, MyPageResp(id: 0, username: '', provider: '', nickname: '', role: '', profileImageUrl: '')),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 

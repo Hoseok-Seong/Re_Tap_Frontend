@@ -3,6 +3,8 @@ import '../dto/goal/goal_ceate_resp.dart';
 import '../dto/goal/goal_create_req.dart';
 import '../dto/goal/goal_delete_resp.dart';
 import '../dto/goal/goal_detail_resp.dart';
+import '../dto/goal/goal_feedback_req.dart';
+import '../dto/goal/goal_feedback_resp.dart';
 import '../dto/goal/goal_list_resp.dart';
 
 class GoalService {
@@ -27,6 +29,11 @@ class GoalService {
 
   Future<GoalDeleteResp> deleteGoals(List<int> ids) async {
     final response = _api.deleteGoals(ids);
+    return response;
+  }
+
+  Future<GoalFeedbackResp> feedbackGoal(GoalFeedbackReq request) async {
+    final response = _api.feedbackGoal(request);
     return response;
   }
 }

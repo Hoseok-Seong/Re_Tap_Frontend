@@ -4,6 +4,8 @@ import '../dto/goal/goal_ceate_resp.dart';
 import '../dto/goal/goal_create_req.dart';
 import '../dto/goal/goal_delete_resp.dart';
 import '../dto/goal/goal_detail_resp.dart';
+import '../dto/goal/goal_feedback_req.dart';
+import '../dto/goal/goal_feedback_resp.dart';
 import '../dto/goal/goal_list_resp.dart';
 import '../service/goal_service.dart';
 import 'global_dio_provider.dart';
@@ -40,4 +42,9 @@ final goalDetailProvider = FutureProvider.family.autoDispose<GoalDetailResp, int
 final goalDeleteProvider = FutureProvider.family.autoDispose<GoalDeleteResp, List<int>>((ref, req) async {
   final service = ref.read(goalServiceProvider);
   return await service.deleteGoals(req);
+});
+
+final feedbackGoalProvider = FutureProvider.family.autoDispose<GoalFeedbackResp, GoalFeedbackReq>((ref, req) async {
+  final service = ref.read(goalServiceProvider);
+  return service.feedbackGoal(req);
 });

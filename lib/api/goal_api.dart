@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:re_tap/dto/goal/goal_feedback_req.dart';
+import 'package:re_tap/dto/goal/goal_feedback_resp.dart';
 
 import '../dto/goal/goal_ceate_resp.dart';
 import '../dto/goal/goal_create_req.dart';
@@ -30,5 +32,10 @@ class GoalApi {
   Future<GoalDeleteResp> deleteGoals(List<int> ids) async {
     final response = await _dio.post('/api/v1/goals/delete', data: GoalDeleteReq(goalIds: ids).toJson());
     return GoalDeleteResp.fromJson(response.data);
+  }
+
+  Future<GoalFeedbackResp> feedbackGoal(GoalFeedbackReq request) async {
+    final response = await _dio.post('/api/v1/goals/feedback', data: request.toJson());
+    return GoalFeedbackResp.fromJson(response.data);
   }
 }

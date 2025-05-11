@@ -56,7 +56,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       ),
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => Center(child: Text('에러 발생: $err')),
+      error: (err, stack) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('홈 데이터를 불러오지 못했어요')),
+          );
+        });
+
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildBanner(),
+              const SizedBox(height: 16),
+              _buildTodaySentence(Quote(no: '', author: '', krContent: '', enContent: '', subject: '')),
+              const SizedBox(height: 16),
+              _buildRecentGoal(context, []),
+              const SizedBox(height: 16),
+              _buildArrivalGoal([]),
+            ],
+          ),
+        );
+      },
     );
   }
 

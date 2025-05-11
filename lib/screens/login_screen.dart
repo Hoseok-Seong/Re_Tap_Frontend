@@ -2,6 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
@@ -18,52 +19,68 @@ class LoginScreen extends ConsumerWidget {
 
   final authService = AuthService();
 
+  DateTime? _lastBackPressTime;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      backgroundColor: AppColors.primary,
-      body: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Spacer(),
-            const Text(
-              'ReTap',
-              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              '목표를 남기고, 다시 확인하는 습관',
-              style: TextStyle(fontSize: 16, color: Colors.white70),
-            ),
-            const Spacer(),
-            _SocialLoginButton(
-              iconPath: 'assets/icons/google_icon2.png',
-              text: '구글로 로그인',
-              backgroundColor: Colors.white70,
-              textColor: Colors.black,
-              onTap: () => _loginWithGoogle(context, ref),
-              borderColor: Colors.grey.shade300,
-            ),
-            const SizedBox(height: 12),
-            _SocialLoginButton(
-              iconPath: 'assets/icons/kakao_icon2.png',
-              text: '카카오 로그인',
-              backgroundColor: const Color(0xFFFEE500),
-              textColor: Colors.black,
-              onTap: () => _loginWithKakao(context, ref),
-            ),
-            const SizedBox(height: 12),
-            _SocialLoginButton(
-              iconPath: 'assets/icons/naver_icon.png',
-              text: '네이버 로그인',
-              backgroundColor: const Color(0xFF03C75A),
-              textColor: Colors.white,
-              onTap: () => _loginWithNaver(context, ref),
-            ),
-            const SizedBox(height: 40),
-          ],
+    return WillPopScope(
+      onWillPop: () async {
+        final now = DateTime.now();
+
+        if (_lastBackPressTime == null ||
+            now.difference(_lastBackPressTime!) > const Duration(seconds: 2)) {
+          _lastBackPressTime = now;
+          Fluttertoast.showToast(msg: '한 번 더 누르면 종료됩니다');
+          return false;
+        }
+
+        return true; // 앱 종료
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.primary,
+        body: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Spacer(),
+              const Text(
+                'ReTap',
+                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                '목표를 남기고, 다시 확인하는 습관',
+                style: TextStyle(fontSize: 16, color: Colors.white70),
+              ),
+              const Spacer(),
+              _SocialLoginButton(
+                iconPath: 'assets/icons/google_icon2.png',
+                text: '구글로 로그인',
+                backgroundColor: Colors.white70,
+                textColor: Colors.black,
+                onTap: () => _loginWithGoogle(context, ref),
+                borderColor: Colors.grey.shade300,
+              ),
+              const SizedBox(height: 12),
+              _SocialLoginButton(
+                iconPath: 'assets/icons/kakao_icon2.png',
+                text: '카카오 로그인',
+                backgroundColor: const Color(0xFFFEE500),
+                textColor: Colors.black,
+                onTap: () => _loginWithKakao(context, ref),
+              ),
+              const SizedBox(height: 12),
+              _SocialLoginButton(
+                iconPath: 'assets/icons/naver_icon.png',
+                text: '네이버 로그인',
+                backgroundColor: const Color(0xFF03C75A),
+                textColor: Colors.white,
+                onTap: () => _loginWithNaver(context, ref),
+              ),
+              const SizedBox(height: 40),
+            ],
+          ),
         ),
       ),
     );

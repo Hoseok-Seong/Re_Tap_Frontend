@@ -8,6 +8,8 @@ class GoalDetailResp {
   final bool isRead;
   final DateTime? readAt;
   final String status;
+  final int? score;
+  final String? feedback;
 
   GoalDetailResp({
     required this.goalId,
@@ -19,6 +21,8 @@ class GoalDetailResp {
     required this.isRead,
     required this.readAt,
     required this.status,
+    required this.score,
+    required this.feedback,
   });
 
   factory GoalDetailResp.fromJson(Map<String, dynamic> json) {
@@ -36,6 +40,8 @@ class GoalDetailResp {
           ? DateTime.parse(json['readAt'])
           : null,
       status: json['status'],
+      score: json['score'],
+      feedback: json['feedback'],
     );
   }
 }

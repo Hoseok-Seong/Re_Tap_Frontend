@@ -47,7 +47,30 @@ class _GoalListScreenState extends ConsumerState<GoalListScreen> {
         padding: const EdgeInsets.all(16.0),
         child: goalListAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (err, _) => Center(child: Text('에러 발생: $err')),
+          error: (err, stack) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('목표 리스트 데이터를 불러오지 못했어요')),
+              );
+            });
+
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('아직 작성한 목표가 없어요', style: TextStyle(fontSize: 16)),
+                  const SizedBox(height: 12),
+                  TextButton(
+                    onPressed: () => context.go('/write'),
+                    child: const Text(
+                      '목표 작성하기',
+                      style: TextStyle(fontSize: 16, color: AppColors.primary),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
           data: (goals) {
             if (goals.isEmpty) {
               return Center(

@@ -128,6 +128,7 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
                       final showLottie = unreadCount > 0 && !_hasPlayedBellAnimation == false;
 
                       return Stack(
+                        alignment: Alignment.center,
                         clipBehavior: Clip.none,
                         children: [
                           IconButton(

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppConstant {
   // static const String baseUrl = 'http://localhost:8080';
-  static const String baseUrl = 'http://192.168.200.102:8080';
+  static const String baseUrl = 'http://192.168.0.9:8080';
 }
 
 class AppColors {
