@@ -247,6 +247,69 @@ class _GoalDetailScreenState extends ConsumerState<GoalDetailScreen> {
                       ),
                     ),
                   ),
+
+                // 피드백 조회 영역
+                if (goal.score != null)
+                  SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // 별점 라벨 + 별점 위젯
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                '이 목표, 얼마나 달성하셨나요?',
+                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                              ),
+                              isEditable
+                                  ? RatingBar.builder(
+                                initialRating: rating,
+                                minRating: 0,
+                                direction: Axis.horizontal,
+                                allowHalfRating: false,
+                                itemCount: 5,
+                                itemPadding: EdgeInsets.zero,
+                                itemSize: 20,
+                                itemBuilder: (context, _) => const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 2),
+                                  child: Icon(Icons.star, color: Colors.amber),
+                                ),
+                                onRatingUpdate: (value) {
+                                  setState(() {
+                                    rating = value;
+                                  });
+                                },
+                              )
+                                  : RatingBarIndicator(
+                                rating: goal.score?.toDouble() ?? 0,
+                                itemCount: 5,
+                                itemSize: 20,
+                                itemBuilder: (context, _) =>
+                                const Icon(Icons.star, color: Colors.amber),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+
+                          // 피드백 텍스트 필드
+                          TextField(
+                            controller: feedbackController,
+                            readOnly: !isEditable,
+                            maxLines: 3,
+                            decoration: const InputDecoration(
+                              hintText: '목표에 대해 스스로에게 피드백을 남겨보세요',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+                      ),
+                    ),
+                  ),
               ],
             );
           },

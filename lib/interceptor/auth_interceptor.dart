@@ -20,7 +20,8 @@ class AuthInterceptor extends Interceptor {
     if (options.path.contains('/api/')) {
       final token = await TokenStorage.getAccessToken();
       if (token != null) {
-        options.headers['Authorization_Access'] = token;
+        //options.headers['Authorization_Access'] = token;
+        options.headers['Authorization'] = token;
       }
     }
     handler.next(options);
@@ -54,7 +55,8 @@ class AuthInterceptor extends Interceptor {
   Future<Response<dynamic>> _retry(RequestOptions req, String newAccessToken) {
     final options = Options(
       method: req.method,
-      headers: Map.of(req.headers)..['Authorization_Access'] = newAccessToken,
+      // headers: Map.of(req.headers)..['Authorization_Access'] = newAccessToken,
+      headers: Map.of(req.headers)..['Authorization'] = newAccessToken,
     );
     return _dio.requestUri(
       req.uri,

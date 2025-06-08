@@ -174,10 +174,10 @@ class _GoalWriteScreenState extends ConsumerState<GoalWriteScreen> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Text(
-                '${_titleController.text.length} / 50',
+                '${_titleController.text.characters.length} / 50',
                 style: TextStyle(
                   fontSize: 12,
-                  color: _titleController.text.length >= 45 ? Colors.red : Colors.grey,
+                  color: _titleController.text.characters.length >= 45 ? Colors.red : Colors.grey,
                 ),
               ),
             ],
@@ -202,10 +202,10 @@ class _GoalWriteScreenState extends ConsumerState<GoalWriteScreen> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Text(
-                '${_contentController.text.length} / 2000',
+                '${_contentController.text.characters.length} / 2000',
                 style: TextStyle(
                   fontSize: 12,
-                  color: _contentController.text.length >= 1800 ? Colors.red : Colors.grey,
+                  color: _contentController.text.characters.length >= 1800 ? Colors.red : Colors.grey,
                 ),
               ),
             ],
