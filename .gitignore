@@ -52,3 +52,5 @@ app.*.map.json
 *.env
 
 /lib/common/constants.dart
+/lib/common/privacy.dart
+/lib/common/terms.dart
