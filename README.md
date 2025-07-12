@@ -1,4 +1,4 @@
-![mockup](.mockup.jpg)
+![mockup](./mockup.jpg)
 
 ## 📱 ReTap: 목표관리와 자기 피드백 Frontend
 
