@@ -38,7 +38,7 @@ ReTap은 당신의 목표를 구체적으로 기록하고, 정해진 알림일�
 - Dio Interceptor를 통한 JWT 자동 삽입, 에러 핸들링, 재시도, 로그아웃 처리
 - Riverpod 기반 전역/로컬 상태 관리
 - GoRouter를 이용한 동적 URI 및 딥링크 라우팅
-- MVVM + Repository 패턴 구조(Screen / Service / Provider / DTO / API)
+- 상태관리 + Dio HTTP 통신 구조 모듈화(Screen / Provider / Service / DTO / API)
 - ShowcaseView를 활용한 온보딩 및 기능 가이드 구현
 
 ---
